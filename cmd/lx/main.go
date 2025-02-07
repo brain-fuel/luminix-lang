@@ -288,12 +288,12 @@ func replaceToMath(input string) string {
 
 func replaceToEnglish(input string) string {
 	replacements := map[string]string{
-		"∃":   "there exists",
-		"∀":   "for all",
-		"/\\": "and",
-		"\\/": "or",
-		"~":   "not",
-		"<=>": "iff",
+		"∃":   " there exists ",
+		"∀":   " for all ",
+		"/\\": " and ",
+		"\\/": " or ",
+		"~":   " not ",
+		"<=>": " iff ",
 	}
 
 	acc := input
@@ -302,7 +302,8 @@ func replaceToEnglish(input string) string {
 		acc = searchRegex.ReplaceAllString(acc, newStr)
 	}
 	// This is for the `$n ==> result` line
-	acc = regexp.MustCompile(`\b=>\b`).ReplaceAllString(acc, "implies")
+	acc = regexp.MustCompile(`\b=>\b`).ReplaceAllString(acc, " implies ")
+	acc = regexp.MustCompile(`\s+`).ReplaceAllString(acc, " ")
 	return acc
 }
 
