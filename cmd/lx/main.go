@@ -105,7 +105,6 @@ func interactiveRepl() {
 
 		prompt := fmt.Sprintf("lx(main):%03d:1> ", commandNum)
 
-		// Determine displayed input dynamically based on mode
 		var displayInput string
 		switch modeIndex {
 		case RAW:
