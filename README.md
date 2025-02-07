@@ -1,7 +1,9 @@
 # Luminix (lx) Language
 
 ## Ideas
-- [ MATH ] mode should probably be the default
+
+- figure out behavior when dealing with math symbols and no whitespace to gracefully transmogrify to English
+- ref. prev. point: make an autoformatter that takes care of this in files (and maybe REPL/REPL history?)
 - `neither x nor y`
 - `:test` command from REPL to run tests asynchronously and print basic results and way to follow them once they have resolved
 
