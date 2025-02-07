@@ -22,6 +22,14 @@ type HistoryEntry struct {
 	English string
 }
 
+type DisplayMode int
+
+const (
+	RAW DisplayMode = iota
+	MATH
+	ENG
+)
+
 func interactiveRepl() {
 	screen, err := tcell.NewScreen()
 	if err != nil {
@@ -37,11 +45,10 @@ func interactiveRepl() {
 
 	screen.Clear()
 	modes := []string{"RAW", "MATH", "ENGLISH"}
-	modeIndex := 0
+	modeIndex := MATH
 	rawInput := ""
 	mathInput := ""
 	englishInput := ""
-	activeInput := &rawInput
 
 	history := []HistoryEntry{}
 	inputHistory := []string{}
@@ -86,23 +93,34 @@ func interactiveRepl() {
 		for _, entry := range history[startIndex:endIndex] {
 			var line string
 			switch modeIndex {
-			case 0:
+			case RAW:
 				line = entry.Raw
-			case 1:
+			case MATH:
 				line = entry.Math
-			case 2:
+			case ENG:
 				line = entry.English
 			}
 			yOffset += drawText(screen, 0, yOffset, tcell.StyleDefault, line, width)
 		}
 
 		prompt := fmt.Sprintf("lx(main):%03d:1> ", commandNum)
+
+		var displayInput string
+		switch modeIndex {
+		case RAW:
+			displayInput = rawInput
+		case MATH:
+			displayInput = mathInput
+		case ENG:
+			displayInput = englishInput
+		}
+
 		yOffset += drawText(
 			screen,
 			0,
 			yOffset,
 			tcell.StyleDefault.Bold(true),
-			prompt+*activeInput,
+			prompt+displayInput,
 			width,
 		)
 		screen.Show()
@@ -117,9 +135,6 @@ func interactiveRepl() {
 				if rawInput == "" {
 					continue
 				}
-
-				mathInput = replaceToMath(rawInput)
-				englishInput = replaceToEnglish(rawInput)
 
 				fullExpression := strings.Join(wrapText(mathInput, width), " ")
 
@@ -141,7 +156,6 @@ func interactiveRepl() {
 				rawInput = ""
 				mathInput = ""
 				englishInput = ""
-				activeInput = &rawInput
 				historyIndex = -1
 				commandNum++
 				scrollOffset = max(0, len(history)-maxLines)
@@ -155,15 +169,7 @@ func interactiveRepl() {
 				historyIndex = -1
 
 			case tcell.KeyCtrlT:
-				modeIndex = (modeIndex + 1) % len(modes)
-				switch modeIndex {
-				case 0:
-					activeInput = &rawInput
-				case 1:
-					activeInput = &mathInput
-				case 2:
-					activeInput = &englishInput
-				}
+				modeIndex = DisplayMode((int(modeIndex) + 1) % len(modes))
 
 			case tcell.KeyUp:
 				if historyIndex == -1 {
@@ -282,12 +288,12 @@ func replaceToMath(input string) string {
 
 func replaceToEnglish(input string) string {
 	replacements := map[string]string{
-		"∃":   "there exists",
-		"∀":   "for all",
-		"/\\": "and",
-		"\\/": "or",
-		"~":   "not",
-		"<=>": "iff",
+		"∃":   " there exists ",
+		"∀":   " for all ",
+		"/\\": " and ",
+		"\\/": " or ",
+		"~":   " not ",
+		"<=>": " iff ",
 	}
 
 	acc := input
@@ -296,7 +302,8 @@ func replaceToEnglish(input string) string {
 		acc = searchRegex.ReplaceAllString(acc, newStr)
 	}
 	// This is for the `$n ==> result` line
-	acc = regexp.MustCompile(`\b=>\b`).ReplaceAllString(acc, "implies")
+	acc = regexp.MustCompile(`\b=>\b`).ReplaceAllString(acc, " implies ")
+	acc = regexp.MustCompile(`\s+`).ReplaceAllString(acc, " ")
 	return acc
 }
 
