@@ -17,7 +17,7 @@ type LXBool struct {
 }
 
 type LXParBool struct {
-	LXBool *LXBool `parser:"'(' @@ ')'"`
+	LXBoolExpr *LXBoolExpr `parser:"'(' @@ ')'"`
 }
 
 type LXBoolExpr struct {

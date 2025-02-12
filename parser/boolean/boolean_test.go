@@ -1,7 +1,6 @@
 package boolean
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,8 +29,22 @@ func TestParens(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
 	assert.NotNil(t, result.LXParBool)
-	fmt.Println(*result)
-	assert.Equal(t, expected, result.LXParBool.LXBool.True)
+	assert.Equal(t, expected, result.LXParBool.LXBoolExpr.LXBool.True)
+}
+
+func TestDoubleParens(t *testing.T) {
+	input := "((true))"
+	expected := Ptr(TRUE)
+	result, err := LXBoolParser.ParseString("", input)
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.NotNil(t, result.LXParBool)
+	assert.NotNil(t, result.LXParBool.LXBoolExpr)
+	assert.NotNil(t, result.LXParBool.LXBoolExpr.LXParBool)
+	assert.NotNil(t, result.LXParBool.LXBoolExpr.LXParBool.LXBoolExpr)
+	assert.NotNil(t, result.LXParBool.LXBoolExpr.LXParBool.LXBoolExpr.LXBool)
+	assert.NotNil(t, result.LXParBool.LXBoolExpr.LXParBool.LXBoolExpr.LXBool.True)
+	assert.Equal(t, expected, result.LXParBool.LXBoolExpr.LXParBool.LXBoolExpr.LXBool.True)
 }
 
 func Ptr(s LXBoolString) *LXBoolString {
