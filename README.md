@@ -31,3 +31,75 @@
 - lx repl (Read, Evaluate, Print Loop): this allows for quick exploration and experimentation in a realm
 - boolean logic
 
+# TODO
+
+## Definition of done
+For any of the boolean things:
+- tests for everything added
+- if applicable, english to math
+- if applicable, math to english
+- seamless repl integration (this means backspace and switching work appropriately)
+
+## lang/parser
+
+### boolean
+### Unary Operators
+- not / ~
+- nullify
+- truify
+- id
+### Binary Operators
+- and /\
+- nand ~/\
+- or \/
+- nor ~\/
+- xnor iff <=>
+- implies =>
+- is implied by <=
+- inhibits /=>
+- is inhibited by <=/
+- left `<s`
+- right `s>` 
+- not left `</`
+- not right `/>`
+
+## lang/parser
+
+## lang/evaluator
+
+### boolean
+### Primitives
+- true #t
+- false #f
+### Unary Operators
+- not / ~
+- nullify
+- truify
+- id
+### Binary Operators
+- and /\
+- nand ~/\
+- or \/
+- nor ~\/
+- xnor iff <=>
+- implies =>
+- is implied by <=
+- inhibits /=>
+- is inhibited by <=/
+- left `<s`
+- right `s>` 
+- not left `</`
+- not right `/>`
+
+# DONE
+
+## lang/parser
+
+#### boolean
+
+- true
+- false
+
+## lang/evaluator
+
+### boolean
