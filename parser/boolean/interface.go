@@ -10,8 +10,8 @@ import (
 type UnOp string
 
 const (
-	NOT_TEXT UnOp = "not"
-	NOT_SYMB UnOp = "~"
+	// NOT_TEXT UnOp = "not"
+	// NOT_SYMB UnOp = "~"
 	FALSE_OP UnOp = "nullify"
 	TRUE_OP  UnOp = "truify"
 	ID       UnOp = "id"
@@ -100,8 +100,8 @@ func EvalBoolExpr(expr *BoolExpr) (bool, error) {
 
 	for idx := len(expr.OptUnOps) - 1; idx >= 0; idx-- {
 		switch expr.OptUnOps[idx] {
-		case NOT_TEXT, NOT_SYMB:
-			acc = !acc
+		// case NOT_TEXT, NOT_SYMB:
+		//	acc = !acc
 		case FALSE_OP:
 			acc = false
 		case TRUE_OP:
