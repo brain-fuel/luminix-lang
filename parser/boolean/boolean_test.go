@@ -1,6 +1,7 @@
 package boolean
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,10 +24,14 @@ func TestFalse(t *testing.T) {
 }
 
 func TestParens(t *testing.T) {
-	input := " ( true ) "
-	// expected := Ptr(TRUE)
-	_, err := LXBoolParser.ParseString("", input)
+	input := "(true)"
+	expected := Ptr(TRUE)
+	result, err := LXBoolParser.ParseString("", input)
 	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.NotNil(t, result.LXParBool)
+	fmt.Println(*result)
+	assert.Equal(t, expected, result.LXParBool.LXBool.True)
 }
 
 func Ptr(s LXBoolString) *LXBoolString {
