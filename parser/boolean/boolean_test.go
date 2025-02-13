@@ -47,6 +47,43 @@ func TestDoubleParens(t *testing.T) {
 	assert.Equal(t, expected, result.LXParBool.LXBoolExpr.LXParBool.LXBoolExpr.LXBool.True)
 }
 
+func TestSingleParenSetPermutations(t *testing.T) {
+	tests := []string{
+		// 0 spaces
+		"(true)",
+		// 1 space
+		" (true)",
+		"( true)",
+		"(true )",
+		"(true) ",
+		// 2 spaces
+		"  (true)",
+		" ( true)",
+		" (true )",
+		" (true) ",
+
+		" ( true)",
+		"(  true)",
+		"( true )",
+		"( true) ",
+
+		" (true )",
+		"( true )",
+		"(true  )",
+		"(true ) ",
+
+		" (true) ",
+		"( true) ",
+		"(true ) ",
+		"(true)  ",
+	}
+	for _, test := range tests {
+		actual, err := LXBoolParser.ParseString("", test)
+		assert.NoError(t, err)
+		assert.Equal(t, Ptr(TRUE), actual.LXParBool.LXBoolExpr.LXBool.True)
+	}
+}
+
 func Ptr(s LXBoolString) *LXBoolString {
 	return &s
 }
