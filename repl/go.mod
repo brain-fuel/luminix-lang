@@ -1,3 +1,3 @@
-module luminix.dev/lang/repl
+module acornlang.dev/lang/repl
 
 go 1.23.5
