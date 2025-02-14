@@ -8,8 +8,8 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 
-	"luminix.dev/lang/parser/boolean"
-	"luminix.dev/lang/repl"
+	"acornlang.dev/lang/parser/boolean"
+	"acornlang.dev/lang/repl"
 )
 
 func main() {

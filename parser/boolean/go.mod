@@ -1,4 +1,4 @@
-module luminix.dev/lang/parser/boolean
+module acornlang.dev/lang/parser/boolean
 
 go 1.23.5
 

@@ -1,17 +1,17 @@
-module luminix.dev/lang
+module acornlang.dev/lang
 
 go 1.23.5
 
-replace luminix.dev/lang/parser => ./parser
+replace acornlang.dev/lang/parser => ./parser
 
-replace luminix.dev/lang/parser/boolean => ./parser/boolean
+replace acornlang.dev/lang/parser/boolean => ./parser/boolean
 
-replace luminix.dev/lang/repl => ./repl
+replace acornlang.dev/lang/repl => ./repl
 
 require (
 	github.com/gdamore/tcell/v2 v2.8.1
-	luminix.dev/lang/parser/boolean v0.0.0-00010101000000-000000000000
-	luminix.dev/lang/repl v0.0.0-00010101000000-000000000000
+	acornlang.dev/lang/parser/boolean v0.0.0-00010101000000-000000000000
+	acornlang.dev/lang/repl v0.0.0-00010101000000-000000000000
 )
 
 require (
