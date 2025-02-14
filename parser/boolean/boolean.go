@@ -2,13 +2,14 @@ package boolean
 
 import (
 	"github.com/alecthomas/participle/v2"
+	"github.com/alecthomas/participle/v2/lexer"
 )
 
-type LiteralString string
+type LitString string
 
 const (
-	TRUE  LiteralString = "true"
-	FALSE LiteralString = "false"
+	TRUE  LitString = "true"
+	FALSE LitString = "false"
 )
 
 type UnaryOpString string
@@ -22,17 +23,18 @@ type UnaryOp struct {
 	Not *UnaryOpString `parser:"@('not' | '~')"`
 }
 
-type Literal struct {
-	Value *LiteralString `parser:"@('true' | 'false')"`
+type Lit struct {
+	Pos   Position   `parser:"", json:"pos"`
+	Value *LitString `parser:"@('true' | 'false')"`
 }
 
-type Parenthetical struct {
+type ParenExpr struct {
 	BooleanExpr *BooleanExpr `parser:"'(' @@ ')'"`
 }
 
 type PrimaryExpr struct {
-	Literal *Literal       `parser:"@@"`
-	Paren   *Parenthetical `parser:"|@@"`
+	Lit   *Lit       `parser:"@@"`
+	Paren *ParenExpr `parser:"|@@"`
 }
 
 type UnaryExpr struct {
@@ -47,3 +49,5 @@ type BooleanExpr struct {
 var BooleanParser = participle.MustBuild[BooleanExpr](
 	participle.UseLookahead(2),
 )
+
+type Position = lexer.Position
