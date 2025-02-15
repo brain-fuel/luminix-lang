@@ -1,4 +1,4 @@
-# Luminix (lx) Language
+# Acorn Language
 
 ## Rules of Engagement
 
