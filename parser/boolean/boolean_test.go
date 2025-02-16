@@ -33,7 +33,7 @@ func TestTrue(t *testing.T) {
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedLit, res.Expressions[0].Bool.Unary.Expr.Lit.Value)
+	assert.Equal(t, expectedLit, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 	assert.Equal(t, expectedPosition, res.Expressions[0].Bool.Unary.Expr.Lit.Pos)
 }
 
@@ -48,7 +48,7 @@ func TestTrueFailAfterTrueSucceed(t *testing.T) {
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test)
-		assert.Equal(t, expectedLit, res.Expressions[0].Bool.Unary.Expr.Lit.Value)
+		assert.Equal(t, expectedLit, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 		assert.Equal(t, expectedPosition, res.Expressions[0].Bool.Unary.Expr.Lit.Pos)
 
 		errorStr := fmt.Sprintf(
@@ -67,8 +67,13 @@ func TestTrueFailAfterTrueSucceedAndNewLine(t *testing.T) {
 		"true\ntru e",
 		"true\nture",
 	}
+	expectedLit := PtrToLitString(TRUE)
+	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	for _, test := range tests {
-		_, err := BooleanParser.ParseString("", test)
+		res, err := BooleanParser.ParseString("", test)
+		assert.Equal(t, expectedLit, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
+		assert.Equal(t, expectedPosition, res.Expressions[0].Bool.Unary.Expr.Lit.Pos)
+
 		errorStr := fmt.Sprintf(
 			"2:1: unexpected token \"%s\" (expected <eof>)",
 			strings.Fields(test)[1],
@@ -102,7 +107,7 @@ func TestFalse(t *testing.T) {
 	expected := PtrToLitString(FALSE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
-	assert.Equal(t, expected, res.Expressions[0].Bool.Unary.Expr.Lit.Value)
+	assert.Equal(t, expected, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
 
 func TestFalseFailAfterFalseSucceed(t *testing.T) {
@@ -144,13 +149,40 @@ func TestFalseFailAfterFalseSucceedAndNewLine(t *testing.T) {
 }
 
 func TestParensFailWithSingleTrue(t *testing.T) {
-	tests := []string{
-		"(true ",
-		" (true",
-		"( true",
+	tests := []struct {
+		Val         string
+		ExpectedPos Position
+	}{
+		{
+			"(true ",
+
+			Position(Position{Filename: "", Offset: 1, Line: 1, Column: 2}),
+		},
+		{
+			" (true",
+
+			Position(Position{Filename: "", Offset: 2, Line: 1, Column: 3}),
+		},
+		{
+			"( true",
+
+			Position(Position{Filename: "", Offset: 2, Line: 1, Column: 3}),
+		},
 	}
+	expectedLit := PtrToLitString(TRUE)
 	for _, test := range tests {
-		_, err := BooleanParser.ParseString("", test)
+		res, err := BooleanParser.ParseString("", test.Val)
+		fmt.Println(res.Expressions[0].Bool)
+		assert.Equal(
+			t,
+			expectedLit,
+			res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Val,
+		)
+		assert.Equal(
+			t,
+			test.ExpectedPos,
+			res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Pos,
+		)
 		errorStr := "1:7: unexpected token \"<EOF>\" (expected \")\")"
 		expectedErr := errors.New(errorStr)
 		assert.EqualError(t, err, expectedErr.Error())
@@ -167,7 +199,7 @@ func TestParens(t *testing.T) {
 	assert.Equal(
 		t,
 		expected,
-		res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Value,
+		res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Val,
 	)
 }
 
@@ -190,12 +222,12 @@ func TestDoubleParens(t *testing.T) {
 	)
 	assert.NotNil(
 		t,
-		res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Value,
+		res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Val,
 	)
 	assert.Equal(
 		t,
 		expected,
-		res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Value,
+		res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Val,
 	)
 }
 
@@ -235,7 +267,7 @@ func TestSingleParenSetPermutations(t *testing.T) {
 		assert.Equal(
 			t,
 			PtrToLitString(TRUE),
-			res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Value,
+			res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Val,
 		)
 	}
 }
@@ -248,7 +280,7 @@ func TestNot(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Not)
-	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Expr.Lit.Value)
+	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
 
 func TestNotNot(t *testing.T) {
@@ -261,7 +293,7 @@ func TestNotNot(t *testing.T) {
 	assert.NotNil(t, res)
 	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Not)
 	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Ops[1].Not)
-	assert.Equal(t, expected2, res.Expressions[0].Bool.Unary.Expr.Lit.Value)
+	assert.Equal(t, expected2, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
 
 func TestNotNotFail(t *testing.T) {
@@ -291,7 +323,7 @@ func TestNotSymb(t *testing.T) {
 		assert.Equal(
 			t,
 			expected1,
-			res.Expressions[0].Bool.Unary.Expr.Lit.Value,
+			res.Expressions[0].Bool.Unary.Expr.Lit.Val,
 		)
 	}
 }
