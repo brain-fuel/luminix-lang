@@ -28,44 +28,52 @@ const (
 )
 
 type UnaryOp struct {
+	Pos Position       `parser:"", json:"pos"`
 	Not *UnaryOpString `parser:"@('not' | '~')"`
 }
 
 type Lit struct {
-	Pos   Position   `parser:"", json:"pos"`
-	Value *LitString `parser:"@('true' | 'false')"`
+	Pos Position   `parser:"", json:"pos"`
+	Val *LitString `parser:"@('true' | 'false')"`
 }
 
 type ParenExpr struct {
+	Pos         Position     `parser:"", json:"pos"`
 	BooleanExpr *BooleanExpr `parser:"'(' @@ ')'"`
 }
 
 type PrimaryExpr struct {
+	Pos   Position   `parser:"", json:"pos"`
 	Lit   *Lit       `parser:"@@"`
 	Paren *ParenExpr `parser:"|@@"`
 }
 
 type UnaryExpr struct {
+	Pos  Position     `parser:"", json:"pos"`
 	Ops  []UnaryOp    `parser:"@@*"`
 	Expr *PrimaryExpr `parser:"@@"`
 }
 
 type BooleanExpr struct {
+	Pos   Position   `parser:"", json:"pos"`
 	Unary *UnaryExpr `parser:"@@"`
 }
 
 type ExprTerminator struct {
-	Value []TermString `parser:"@(';;' | '(\\r)?\\n')+"`
+	Pos Position     `parser:"", json:"pos"`
+	Val []TermString `parser:"@(';;' | '(\\r)?\\n')+"`
 }
 
 type Expr struct {
+	Pos            Position        `parser:"", json:"pos"`
 	Bool           *BooleanExpr    `parser:"@@"`
 	ExprTerminator *ExprTerminator `parser:"(@@)?"`
 }
 
 type File struct {
-	Expressions []Expr `parser:"@@"`
-	EOF         string `parser:"EOF"`
+	Pos         Position `parser:"", json:"pos"`
+	Expressions []Expr   `parser:"@@"`
+	EOF         string   `parser:"EOF"`
 }
 
 var BooleanParser = participle.MustBuild[File]()
