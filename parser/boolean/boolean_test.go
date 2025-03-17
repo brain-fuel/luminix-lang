@@ -279,7 +279,7 @@ func TestNot(t *testing.T) {
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
-	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Not)
+	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Op)
 	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
 
@@ -291,8 +291,8 @@ func TestNotNot(t *testing.T) {
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
-	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Not)
-	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Ops[1].Not)
+	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Op)
+	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Ops[1].Op)
 	assert.Equal(t, expected2, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
 
@@ -318,7 +318,7 @@ func TestNotSymb(t *testing.T) {
 		assert.Equal(
 			t,
 			expected0,
-			res.Expressions[0].Bool.Unary.Ops[0].Not,
+			res.Expressions[0].Bool.Unary.Ops[0].Op,
 		)
 		assert.Equal(
 			t,
