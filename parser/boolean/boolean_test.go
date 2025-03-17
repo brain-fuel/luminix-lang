@@ -103,7 +103,7 @@ func TestFalseFail(t *testing.T) {
 }
 
 func TestFalse(t *testing.T) {
-	input := "false"
+	input := "False"
 	expected := PtrToLitString(FALSE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
@@ -112,11 +112,11 @@ func TestFalse(t *testing.T) {
 
 func TestFalseFailAfterFalseSucceed(t *testing.T) {
 	tests := []string{
-		"false f alse",
-		"false fa lse",
-		"false fal se",
-		"false fals e",
-		"false flase",
+		"False f alse",
+		"False fa lse",
+		"False fal se",
+		"False fals e",
+		"False flase",
 	}
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test)
@@ -131,11 +131,11 @@ func TestFalseFailAfterFalseSucceed(t *testing.T) {
 
 func TestFalseFailAfterFalseSucceedAndNewLine(t *testing.T) {
 	tests := []string{
-		"false\nf alse",
-		"false\nfa lse",
-		"false\nfal se",
-		"false\nfals e",
-		"false\nflase",
+		"False\nf alse",
+		"False\nfa lse",
+		"False\nfal se",
+		"False\nfals e",
+		"False\nflase",
 	}
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test)

@@ -9,7 +9,7 @@ type LitString string
 
 const (
 	TRUE  LitString = "True"
-	FALSE LitString = "false"
+	FALSE LitString = "False"
 )
 
 type UnaryOpString string
@@ -34,7 +34,7 @@ type UnaryOp struct {
 
 type Lit struct {
 	Pos Position   `parser:"", json:"pos"`
-	Val *LitString `parser:"@('True' | 'false')"`
+	Val *LitString `parser:"@('True' | 'False')"`
 }
 
 type ParenExpr struct {
