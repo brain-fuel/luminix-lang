@@ -28,7 +28,7 @@ func TestTrueFail(t *testing.T) {
 }
 
 func TestTrue(t *testing.T) {
-	input := "true"
+	input := "True"
 	expectedLit := PtrToLitString(TRUE)
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	res, err := BooleanParser.ParseString("", input)
@@ -39,10 +39,10 @@ func TestTrue(t *testing.T) {
 
 func TestTrueFailAfterTrueSucceed(t *testing.T) {
 	tests := []string{
-		"true t rue",
-		"true tr ue",
-		"true tru e",
-		"true ture",
+		"True t rue",
+		"True tr ue",
+		"True tru e",
+		"True ture",
 	}
 	expectedLit := PtrToLitString(TRUE)
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
@@ -62,10 +62,10 @@ func TestTrueFailAfterTrueSucceed(t *testing.T) {
 
 func TestTrueFailAfterTrueSucceedAndNewLine(t *testing.T) {
 	tests := []string{
-		"true\nt rue",
-		"true\ntr ue",
-		"true\ntru e",
-		"true\nture",
+		"True\nt rue",
+		"True\ntr ue",
+		"True\ntru e",
+		"True\nture",
 	}
 	expectedLit := PtrToLitString(TRUE)
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
@@ -154,17 +154,17 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 		ExpectedPos Position
 	}{
 		{
-			"(true ",
+			"(True ",
 
 			Position(Position{Filename: "", Offset: 1, Line: 1, Column: 2}),
 		},
 		{
-			" (true",
+			" (True",
 
 			Position(Position{Filename: "", Offset: 2, Line: 1, Column: 3}),
 		},
 		{
-			"( true",
+			"( True",
 
 			Position(Position{Filename: "", Offset: 2, Line: 1, Column: 3}),
 		},
@@ -190,7 +190,7 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 }
 
 func TestParens(t *testing.T) {
-	input := "(true)"
+	input := "(True)"
 	expected := PtrToLitString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
@@ -204,7 +204,7 @@ func TestParens(t *testing.T) {
 }
 
 func TestDoubleParens(t *testing.T) {
-	input := "((true))"
+	input := "((True))"
 	expected := PtrToLitString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
@@ -234,32 +234,32 @@ func TestDoubleParens(t *testing.T) {
 func TestSingleParenSetPermutations(t *testing.T) {
 	tests := []string{
 		// 0 spaces
-		"(true)",
+		"(True)",
 		// 1 space
-		" (true)",
-		"( true)",
-		"(true )",
-		"(true) ",
+		" (True)",
+		"( True)",
+		"(True )",
+		"(True) ",
 		// 2 spaces
-		"  (true)",
-		" ( true)",
-		" (true )",
-		" (true) ",
+		"  (True)",
+		" ( True)",
+		" (True )",
+		" (True) ",
 
-		" ( true)",
-		"(  true)",
-		"( true )",
-		"( true) ",
+		" ( True)",
+		"(  True)",
+		"( True )",
+		"( True) ",
 
-		" (true )",
-		"( true )",
-		"(true  )",
-		"(true ) ",
+		" (True )",
+		"( True )",
+		"(True  )",
+		"(True ) ",
 
-		" (true) ",
-		"( true) ",
-		"(true ) ",
-		"(true)  ",
+		" (True) ",
+		"( True) ",
+		"(True ) ",
+		"(True)  ",
 	}
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test)
@@ -273,7 +273,7 @@ func TestSingleParenSetPermutations(t *testing.T) {
 }
 
 func TestNot(t *testing.T) {
-	input := "not true"
+	input := "not True"
 	expected0 := PtrToUnaryOpString(NOT_TEXT)
 	expected1 := PtrToLitString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
@@ -284,7 +284,7 @@ func TestNot(t *testing.T) {
 }
 
 func TestNotNot(t *testing.T) {
-	input := "not not true"
+	input := "not not True"
 	expected0 := PtrToUnaryOpString(NOT_TEXT)
 	expected1 := PtrToUnaryOpString(NOT_TEXT)
 	expected2 := PtrToLitString(TRUE)
@@ -306,11 +306,11 @@ func TestNotSymb(t *testing.T) {
 	expected0 := PtrToUnaryOpString(NOT_SYMB)
 	expected1 := PtrToLitString(TRUE)
 	tests := []string{
-		"~true",
-		"~ true",
-		" ~true",
-		" ~ true",
-		" ~  true",
+		"~True",
+		"~ True",
+		" ~True",
+		" ~ True",
+		" ~  True",
 	}
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test)
