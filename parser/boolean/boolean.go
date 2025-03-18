@@ -8,8 +8,8 @@ import (
 type LitString string
 
 const (
-	TRUE  LitString = "true"
-	FALSE LitString = "false"
+	TRUE  LitString = "True"
+	FALSE LitString = "False"
 )
 
 type UnaryOpString string
@@ -29,12 +29,12 @@ const (
 
 type UnaryOp struct {
 	Pos Position       `parser:"", json:"pos"`
-	Not *UnaryOpString `parser:"@('not' | '~')"`
+	Op  *UnaryOpString `parser:"@('not' | '~')"`
 }
 
 type Lit struct {
 	Pos Position   `parser:"", json:"pos"`
-	Val *LitString `parser:"@('true' | 'false')"`
+	Val *LitString `parser:"@('True' | 'False')"`
 }
 
 type ParenExpr struct {

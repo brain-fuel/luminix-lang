@@ -28,7 +28,7 @@ func TestTrueFail(t *testing.T) {
 }
 
 func TestTrue(t *testing.T) {
-	input := "true"
+	input := "True"
 	expectedLit := PtrToLitString(TRUE)
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	res, err := BooleanParser.ParseString("", input)
@@ -39,10 +39,10 @@ func TestTrue(t *testing.T) {
 
 func TestTrueFailAfterTrueSucceed(t *testing.T) {
 	tests := []string{
-		"true t rue",
-		"true tr ue",
-		"true tru e",
-		"true ture",
+		"True t rue",
+		"True tr ue",
+		"True tru e",
+		"True ture",
 	}
 	expectedLit := PtrToLitString(TRUE)
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
@@ -62,10 +62,10 @@ func TestTrueFailAfterTrueSucceed(t *testing.T) {
 
 func TestTrueFailAfterTrueSucceedAndNewLine(t *testing.T) {
 	tests := []string{
-		"true\nt rue",
-		"true\ntr ue",
-		"true\ntru e",
-		"true\nture",
+		"True\nt rue",
+		"True\ntr ue",
+		"True\ntru e",
+		"True\nture",
 	}
 	expectedLit := PtrToLitString(TRUE)
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
@@ -103,7 +103,7 @@ func TestFalseFail(t *testing.T) {
 }
 
 func TestFalse(t *testing.T) {
-	input := "false"
+	input := "False"
 	expected := PtrToLitString(FALSE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
@@ -112,11 +112,11 @@ func TestFalse(t *testing.T) {
 
 func TestFalseFailAfterFalseSucceed(t *testing.T) {
 	tests := []string{
-		"false f alse",
-		"false fa lse",
-		"false fal se",
-		"false fals e",
-		"false flase",
+		"False f alse",
+		"False fa lse",
+		"False fal se",
+		"False fals e",
+		"False flase",
 	}
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test)
@@ -131,11 +131,11 @@ func TestFalseFailAfterFalseSucceed(t *testing.T) {
 
 func TestFalseFailAfterFalseSucceedAndNewLine(t *testing.T) {
 	tests := []string{
-		"false\nf alse",
-		"false\nfa lse",
-		"false\nfal se",
-		"false\nfals e",
-		"false\nflase",
+		"False\nf alse",
+		"False\nfa lse",
+		"False\nfal se",
+		"False\nfals e",
+		"False\nflase",
 	}
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test)
@@ -154,18 +154,15 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 		ExpectedPos Position
 	}{
 		{
-			"(true ",
-
+			"(True ",
 			Position(Position{Filename: "", Offset: 1, Line: 1, Column: 2}),
 		},
 		{
-			" (true",
-
+			" (True",
 			Position(Position{Filename: "", Offset: 2, Line: 1, Column: 3}),
 		},
 		{
-			"( true",
-
+			"( True",
 			Position(Position{Filename: "", Offset: 2, Line: 1, Column: 3}),
 		},
 	}
@@ -190,7 +187,7 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 }
 
 func TestParens(t *testing.T) {
-	input := "(true)"
+	input := "(True)"
 	expected := PtrToLitString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
@@ -204,7 +201,7 @@ func TestParens(t *testing.T) {
 }
 
 func TestDoubleParens(t *testing.T) {
-	input := "((true))"
+	input := "((True))"
 	expected := PtrToLitString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
@@ -234,32 +231,32 @@ func TestDoubleParens(t *testing.T) {
 func TestSingleParenSetPermutations(t *testing.T) {
 	tests := []string{
 		// 0 spaces
-		"(true)",
+		"(True)",
 		// 1 space
-		" (true)",
-		"( true)",
-		"(true )",
-		"(true) ",
+		" (True)",
+		"( True)",
+		"(True )",
+		"(True) ",
 		// 2 spaces
-		"  (true)",
-		" ( true)",
-		" (true )",
-		" (true) ",
+		"  (True)",
+		" ( True)",
+		" (True )",
+		" (True) ",
 
-		" ( true)",
-		"(  true)",
-		"( true )",
-		"( true) ",
+		" ( True)",
+		"(  True)",
+		"( True )",
+		"( True) ",
 
-		" (true )",
-		"( true )",
-		"(true  )",
-		"(true ) ",
+		" (True )",
+		"( True )",
+		"(True  )",
+		"(True ) ",
 
-		" (true) ",
-		"( true) ",
-		"(true ) ",
-		"(true)  ",
+		" (True) ",
+		"( True) ",
+		"(True ) ",
+		"(True)  ",
 	}
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test)
@@ -273,26 +270,26 @@ func TestSingleParenSetPermutations(t *testing.T) {
 }
 
 func TestNot(t *testing.T) {
-	input := "not true"
+	input := "not True"
 	expected0 := PtrToUnaryOpString(NOT_TEXT)
 	expected1 := PtrToLitString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
-	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Not)
+	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Op)
 	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
 
 func TestNotNot(t *testing.T) {
-	input := "not not true"
+	input := "not not True"
 	expected0 := PtrToUnaryOpString(NOT_TEXT)
 	expected1 := PtrToUnaryOpString(NOT_TEXT)
 	expected2 := PtrToLitString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
-	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Not)
-	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Ops[1].Not)
+	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Op)
+	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Ops[1].Op)
 	assert.Equal(t, expected2, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
 
@@ -306,11 +303,11 @@ func TestNotSymb(t *testing.T) {
 	expected0 := PtrToUnaryOpString(NOT_SYMB)
 	expected1 := PtrToLitString(TRUE)
 	tests := []string{
-		"~true",
-		"~ true",
-		" ~true",
-		" ~ true",
-		" ~  true",
+		"~True",
+		"~ True",
+		" ~True",
+		" ~ True",
+		" ~  True",
 	}
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test)
@@ -318,7 +315,7 @@ func TestNotSymb(t *testing.T) {
 		assert.Equal(
 			t,
 			expected0,
-			res.Expressions[0].Bool.Unary.Ops[0].Not,
+			res.Expressions[0].Bool.Unary.Ops[0].Op,
 		)
 		assert.Equal(
 			t,
