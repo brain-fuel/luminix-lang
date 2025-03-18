@@ -155,17 +155,14 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 	}{
 		{
 			"(True ",
-
 			Position(Position{Filename: "", Offset: 1, Line: 1, Column: 2}),
 		},
 		{
 			" (True",
-
 			Position(Position{Filename: "", Offset: 2, Line: 1, Column: 3}),
 		},
 		{
 			"( True",
-
 			Position(Position{Filename: "", Offset: 2, Line: 1, Column: 3}),
 		},
 	}
