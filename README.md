@@ -44,20 +44,19 @@ For any of the boolean things:
 
 ### boolean
 ### Unary Operators
-- not / ~
 - nullify
 - truify
 - id
 ### Binary Operators
-- and /\
-- nand ~/\
-- or \/
-- nor ~\/
-- xnor iff <=>
-- implies =>
-- is implied by <=
-- inhibits /=>
-- is inhibited by <=/
+- and `/\`
+- nand `~/\`
+- or `\/`
+- nor `~\/`
+- xnor iff `<=>`
+- implies `=>`
+- is implied by `<=`
+- inhibits `/=>`
+- is inhibited by `<=/`
 - left `<s`
 - right `s>` 
 - not left `</`
@@ -97,8 +96,8 @@ For any of the boolean things:
 
 #### boolean
 
-- true
-- false
+- True
+- False
 
 ## lang/evaluator
 
