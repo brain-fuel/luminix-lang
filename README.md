@@ -43,6 +43,7 @@ For any of the boolean things:
 ## lang/parser
 
 ### boolean
+
 #### Binary Operators
 - and `/\`
 - nand `~/\`
@@ -58,39 +59,13 @@ For any of the boolean things:
 - not left `</`
 - not right `/>`
 
-## lang/parser
-
-## lang/evaluator
-
-### boolean
-### Primitives
-- true #t
-- false #f
-### Unary Operators
-- not / ~
-- nullify
-- truify
-- id
-### Binary Operators
-- and /\
-- nand ~/\
-- or \/
-- nor ~\/
-- xnor iff <=>
-- implies =>
-- is implied by <=
-- inhibits /=>
-- is inhibited by <=/
-- left `<s`
-- right `s>` 
-- not left `</`
-- not right `/>`
-
 # DONE
 
 ## lang/parser
 
 ### boolean
+
+#### Primitives
 - True
 - False
 
@@ -100,5 +75,3 @@ For any of the boolean things:
 - id
 
 ## lang/evaluator
-
-### boolean
