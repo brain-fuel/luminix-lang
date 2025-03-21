@@ -362,6 +362,13 @@ func TestTruify(t *testing.T) {
 	assert.Equal(t, expectedPtrToNullifyText, res.Expressions[0].Bool.Unary.Ops[0].Op)
 	assert.Equal(t, expectedPtrToTrueText, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
+func TestTruifyFail(t *testing.T) {
+	input := "truify"
+	_, err := BooleanParser.ParseString("", input)
+	errorStr := "1:7: unexpected token \"<EOF>\" (expected PrimaryExpr)"
+	expectedErr := errors.New(errorStr)
+	assert.EqualError(t, err, expectedErr.Error())
+}
 
 func TestId(t *testing.T) {
 
