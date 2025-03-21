@@ -43,11 +43,7 @@ For any of the boolean things:
 ## lang/parser
 
 ### boolean
-### Unary Operators
-- nullify
-- truify
-- id
-### Binary Operators
+#### Binary Operators
 - and `/\`
 - nand `~/\`
 - or `\/`
@@ -94,10 +90,14 @@ For any of the boolean things:
 
 ## lang/parser
 
-#### boolean
-
+### boolean
 - True
 - False
+
+#### Unary Operators
+- nullify
+- truify
+- id
 
 ## lang/evaluator
 
