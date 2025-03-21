@@ -332,3 +332,22 @@ func PtrToLitString(s LitString) *LitString {
 func PtrToUnaryOpString(s UnaryOpString) *UnaryOpString {
 	return &s
 }
+
+func TestNullify(t *testing.T) {
+	input := "nullify True"
+	expectedPtrToNullifyText := PtrToUnaryOpString(NULLIFY_TEXT)
+	expectedPtrToTrueText := PtrToLitString(TRUE)
+	res, err := BooleanParser.ParseString("", input)
+	assert.NoError(t, err)
+	assert.NotNil(t, res)
+	assert.Equal(t, expectedPtrToNullifyText, res.Expressions[0].Bool.Unary.Ops[0].Op)
+	assert.Equal(t, expectedPtrToTrueText, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
+}
+
+func TestTruify(t *testing.T) {
+
+}
+
+func TestId(t *testing.T) {
+
+}
