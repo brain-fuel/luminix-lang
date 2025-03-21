@@ -380,3 +380,11 @@ func TestId(t *testing.T) {
 	assert.Equal(t, expectedPtrToIdText, res.Expressions[0].Bool.Unary.Ops[0].Op)
 	assert.Equal(t, expectedPtrToTrueText, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
+
+func TestIdFail(t *testing.T) {
+	input := "id"
+	_, err := BooleanParser.ParseString("", input)
+	errorStr := "1:3: unexpected token \"<EOF>\" (expected PrimaryExpr)"
+	expectedErr := errors.New(errorStr)
+	assert.EqualError(t, err, expectedErr.Error())
+}
