@@ -269,15 +269,59 @@ func TestSingleParenSetPermutations(t *testing.T) {
 	}
 }
 
-func TestNot(t *testing.T) {
-	input := "not True"
-	expected0 := PtrToUnaryOpString(NOT_TEXT)
-	expected1 := PtrToLitString(TRUE)
+func ActAndAssertUnaryOpSuccess(t *testing.T, input string, expectedPtr *UnaryOpString) {
+	expectedPtrToTrueText := PtrToLitString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
-	assert.Equal(t, expected0, res.Expressions[0].Bool.Unary.Ops[0].Op)
-	assert.Equal(t, expected1, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
+	assert.Equal(t, expectedPtr, res.Expressions[0].Bool.Unary.Ops[0].Op)
+	assert.Equal(t, expectedPtrToTrueText, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
+}
+
+func TestUnaryOps(t *testing.T) {
+	testCases := []struct {
+		input       string
+		expectedPtr *UnaryOpString
+	}{
+		{
+			"not True",
+			PtrToUnaryOpString(NOT_TEXT),
+		},
+		{
+			"nullify True",
+			PtrToUnaryOpString(NULLIFY_TEXT),
+		},
+		{
+			"truify True",
+			PtrToUnaryOpString(TRUIFY_TEXT),
+		},
+		{
+			"id True",
+			PtrToUnaryOpString(ID_TEXT),
+		},
+	}
+	for _, test := range testCases {
+		ActAndAssertUnaryOpSuccess(t, test.input, test.expectedPtr)
+	}
+}
+
+func ActAndAssertUnaryOpFail(t *testing.T, input string) {
+	_, err := BooleanParser.ParseString("", input)
+	errorStr := fmt.Sprintf("1:%d: unexpected token \"<EOF>\" (expected PrimaryExpr)", len(input)+1)
+	expectedErr := errors.New(errorStr)
+	assert.EqualError(t, err, expectedErr.Error())
+}
+
+func TestUnaryOpsFail(t *testing.T) {
+	testCases := []string{
+		"not",
+		"nullify",
+		"truify",
+		"id",
+	}
+	for _, test := range testCases {
+		ActAndAssertUnaryOpFail(t, test)
+	}
 }
 
 func TestNotNot(t *testing.T) {

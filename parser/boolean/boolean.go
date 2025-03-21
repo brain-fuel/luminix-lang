@@ -15,8 +15,11 @@ const (
 type UnaryOpString string
 
 const (
-	NOT_TEXT UnaryOpString = "not"
-	NOT_SYMB UnaryOpString = "~"
+	NOT_TEXT     UnaryOpString = "not"
+	NOT_SYMB     UnaryOpString = "~"
+	NULLIFY_TEXT UnaryOpString = "nullify"
+	TRUIFY_TEXT  UnaryOpString = "truify"
+	ID_TEXT      UnaryOpString = "id"
 )
 
 type TermString string
@@ -29,7 +32,7 @@ const (
 
 type UnaryOp struct {
 	Pos Position       `parser:"", json:"pos"`
-	Op  *UnaryOpString `parser:"@('not' | '~')"`
+	Op  *UnaryOpString `parser:"@('not' | '~' | 'nullify' | 'truify' | 'id')"`
 }
 
 type Lit struct {
