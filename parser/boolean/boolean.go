@@ -32,7 +32,7 @@ const (
 
 type UnaryOp struct {
 	Pos Position       `parser:"", json:"pos"`
-	Op  *UnaryOpString `parser:"@('not' | '~' | 'nullify')"`
+	Op  *UnaryOpString `parser:"@('not' | '~' | 'nullify' | 'truify')"`
 }
 
 type Lit struct {

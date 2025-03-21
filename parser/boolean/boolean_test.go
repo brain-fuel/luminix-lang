@@ -353,7 +353,14 @@ func TestNullifyFail(t *testing.T) {
 }
 
 func TestTruify(t *testing.T) {
-
+	input := "truify True"
+	expectedPtrToNullifyText := PtrToUnaryOpString(TRUIFY_TEXT)
+	expectedPtrToTrueText := PtrToLitString(TRUE)
+	res, err := BooleanParser.ParseString("", input)
+	assert.NoError(t, err)
+	assert.NotNil(t, res)
+	assert.Equal(t, expectedPtrToNullifyText, res.Expressions[0].Bool.Unary.Ops[0].Op)
+	assert.Equal(t, expectedPtrToTrueText, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
 
 func TestId(t *testing.T) {
