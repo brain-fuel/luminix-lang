@@ -344,6 +344,14 @@ func TestNullify(t *testing.T) {
 	assert.Equal(t, expectedPtrToTrueText, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
 }
 
+func TestNullifyFail(t *testing.T) {
+	input := "nullify"
+	_, err := BooleanParser.ParseString("", input)
+	errorStr := "1:8: unexpected token \"<EOF>\" (expected PrimaryExpr)"
+	expectedErr := errors.New(errorStr)
+	assert.EqualError(t, err, expectedErr.Error())
+}
+
 func TestTruify(t *testing.T) {
 
 }
