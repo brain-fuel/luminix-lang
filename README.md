@@ -70,6 +70,7 @@ For any of the boolean things:
 - False
 
 #### Unary Operators
+- not `~`
 - nullify
 - truify
 - id
