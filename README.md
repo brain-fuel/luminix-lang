@@ -28,7 +28,7 @@
 
 ## Features
 
-- lx repl (Read, Evaluate, Print Loop): this allows for quick exploration and experimentation in a realm
+- `ac repl | acorn repl | aci`  (Read, Evaluate, Print Loop): this allows for quick exploration and experimentation in a realm
 - boolean logic
 
 # TODO
