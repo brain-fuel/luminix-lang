@@ -12,16 +12,6 @@ const (
 	FALSE LitString = "False"
 )
 
-type UnaryOpString string
-
-const (
-	NOT_TEXT     UnaryOpString = "not"
-	NOT_SYMB     UnaryOpString = "~"
-	NULLIFY_TEXT UnaryOpString = "nullify"
-	TRUIFY_TEXT  UnaryOpString = "truify"
-	ID_TEXT      UnaryOpString = "id"
-)
-
 type TermString string
 
 const (
@@ -33,6 +23,11 @@ const (
 type UnaryOp struct {
 	Pos Position       `parser:"", json:"pos"`
 	Op  *UnaryOpString `parser:"@('not' | '~' | 'nullify' | 'truify' | 'id')"`
+}
+
+type BinaryOp struct {
+	Pos Position        `parser:"", json:"pos"`
+	Op  *BinaryOpString `parser:"@()"`
 }
 
 type Lit struct {
@@ -57,9 +52,16 @@ type UnaryExpr struct {
 	Expr *PrimaryExpr `parser:"@@"`
 }
 
-type BooleanExpr struct {
+type BinaryExprRest struct {
 	Pos   Position   `parser:"", json:"pos"`
+	Op    *BinaryOp  `parser:"@@"`
 	Unary *UnaryExpr `parser:"@@"`
+}
+
+type BooleanExpr struct {
+	Pos   Position         `parser:"", json:"pos"`
+	Unary *UnaryExpr       `parser:"@@"`
+	Rest  []BinaryExprRest `parser:"@@*"`
 }
 
 type ExprTerminator struct {
