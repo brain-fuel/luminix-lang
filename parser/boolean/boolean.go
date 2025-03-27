@@ -27,7 +27,7 @@ type UnaryOp struct {
 
 type BinaryOp struct {
 	Pos Position        `parser:"", json:"pos"`
-	Op  *BinaryOpString `parser:"@()"`
+	Op  *BinaryOpString `@("and" | "/\\" | "nand" | "~/\\" | "or" | "\\/" | "nor" | "xnor" | "iff" | "<=>" | "xor" | "<~>" | "~\\/" | "implies" | "=>" | "is implied by" | "<=" | "inhibits" | "/=>" | "is inhibited by" | "<=/" | "left" | "<s" | "right" | "s>" | "not left" | "</" | "not right" | "/>")`
 }
 
 type Lit struct {
