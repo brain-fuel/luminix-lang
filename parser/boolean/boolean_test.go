@@ -29,7 +29,7 @@ func TestTrueFail(t *testing.T) {
 
 func TestTrue(t *testing.T) {
 	input := "True"
-	expectedLit := PtrToLitString(TRUE)
+	expectedLit := PtrToString(TRUE)
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
@@ -44,7 +44,7 @@ func TestTrueFailAfterTrueSucceed(t *testing.T) {
 		"True tru e",
 		"True ture",
 	}
-	expectedLit := PtrToLitString(TRUE)
+	expectedLit := PtrToString(TRUE)
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test)
@@ -67,7 +67,7 @@ func TestTrueFailAfterTrueSucceedAndNewLine(t *testing.T) {
 		"True\ntru e",
 		"True\nture",
 	}
-	expectedLit := PtrToLitString(TRUE)
+	expectedLit := PtrToString(TRUE)
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test)
@@ -104,7 +104,7 @@ func TestFalseFail(t *testing.T) {
 
 func TestFalse(t *testing.T) {
 	input := "False"
-	expected := PtrToLitString(FALSE)
+	expected := PtrToString(FALSE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.Equal(t, expected, res.Expressions[0].Bool.Unary.Expr.Lit.Val)
@@ -166,10 +166,9 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 			Position(Position{Filename: "", Offset: 2, Line: 1, Column: 3}),
 		},
 	}
-	expectedLit := PtrToLitString(TRUE)
+	expectedLit := PtrToString(TRUE)
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test.Val)
-		fmt.Println(res.Expressions[0].Bool)
 		assert.Equal(
 			t,
 			expectedLit,
@@ -188,7 +187,7 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 
 func TestParens(t *testing.T) {
 	input := "(True)"
-	expected := PtrToLitString(TRUE)
+	expected := PtrToString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
@@ -202,7 +201,7 @@ func TestParens(t *testing.T) {
 
 func TestDoubleParens(t *testing.T) {
 	input := "((True))"
-	expected := PtrToLitString(TRUE)
+	expected := PtrToString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
@@ -263,14 +262,14 @@ func TestSingleParenSetPermutations(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(
 			t,
-			PtrToLitString(TRUE),
+			PtrToString(TRUE),
 			res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit.Val,
 		)
 	}
 }
 
-func ActAndAssertUnaryOpSuccess(t *testing.T, input string, expectedPtr *UnaryOpString) {
-	expectedPtrToTrueText := PtrToLitString(TRUE)
+func ActAndAssertUnaryOpSuccess(t *testing.T, input string, expectedPtr *string) {
+	expectedPtrToTrueText := PtrToString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
@@ -281,23 +280,23 @@ func ActAndAssertUnaryOpSuccess(t *testing.T, input string, expectedPtr *UnaryOp
 func TestUnaryOps(t *testing.T) {
 	testCases := []struct {
 		input       string
-		expectedPtr *UnaryOpString
+		expectedPtr *string
 	}{
 		{
 			"not True",
-			PtrToUnaryOpString(NOT_TEXT),
+			PtrToString(NOT_TEXT),
 		},
 		{
 			"nullify True",
-			PtrToUnaryOpString(NULLIFY_TEXT),
+			PtrToString(NULLIFY_TEXT),
 		},
 		{
 			"truify True",
-			PtrToUnaryOpString(TRUIFY_TEXT),
+			PtrToString(TRUIFY_TEXT),
 		},
 		{
 			"id True",
-			PtrToUnaryOpString(ID_TEXT),
+			PtrToString(ID_TEXT),
 		},
 	}
 	for _, test := range testCases {
@@ -326,9 +325,9 @@ func TestUnaryOpsFail(t *testing.T) {
 
 func TestNotNot(t *testing.T) {
 	input := "not not True"
-	expected0 := PtrToUnaryOpString(NOT_TEXT)
-	expected1 := PtrToUnaryOpString(NOT_TEXT)
-	expected2 := PtrToLitString(TRUE)
+	expected0 := PtrToString(NOT_TEXT)
+	expected1 := PtrToString(NOT_TEXT)
+	expected2 := PtrToString(TRUE)
 	res, err := BooleanParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
@@ -344,8 +343,8 @@ func TestNotNotFail(t *testing.T) {
 }
 
 func TestNotSymb(t *testing.T) {
-	expected0 := PtrToUnaryOpString(NOT_SYMB)
-	expected1 := PtrToLitString(TRUE)
+	expected0 := PtrToString(NOT_SYMB)
+	expected1 := PtrToString(TRUE)
 	tests := []string{
 		"~True",
 		"~ True",
@@ -369,10 +368,6 @@ func TestNotSymb(t *testing.T) {
 	}
 }
 
-func PtrToLitString(s LitString) *LitString {
-	return &s
-}
-
-func PtrToUnaryOpString(s UnaryOpString) *UnaryOpString {
+func PtrToString(s string) *string {
 	return &s
 }
