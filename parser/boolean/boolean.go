@@ -12,6 +12,11 @@ const (
 	FALSE string = "False"
 )
 
+var (
+	TRUE_WB  WBString = NewWBString(TRUE, BothBoundaries)
+	FALSE_WB WBString = NewWBString(FALSE, BothBoundaries)
+)
+
 const (
 	NOT_TEXT     string = "not"
 	NOT_SYMB     string = "~"
@@ -133,8 +138,11 @@ var tokenDefinitions = []TokenDef{
 		},
 	},
 	{
-		Name:  "LitString",
-		Regex: `(\bTrue\b|\bFalse\b)`,
+		Name: "LitString",
+		OneOf: []string{
+			TRUE_WB.String(),
+			FALSE_WB.String(),
+		},
 	},
 	{
 		Name:  "Newline",
