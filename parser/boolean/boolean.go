@@ -1,43 +1,166 @@
 package boolean
 
 import (
+	"strings"
+
 	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
-type LitString string
+type WordBoundaryPolicy int
 
 const (
-	TRUE  LitString = "True"
-	FALSE LitString = "False"
+	NoBoundary WordBoundaryPolicy = iota
+	LeftBoundary
+	RightBoundary
+	BothBoundaries
 )
 
-type UnaryOpString string
-
-const (
-	NOT_TEXT     UnaryOpString = "not"
-	NOT_SYMB     UnaryOpString = "~"
-	NULLIFY_TEXT UnaryOpString = "nullify"
-	TRUIFY_TEXT  UnaryOpString = "truify"
-	ID_TEXT      UnaryOpString = "id"
-)
-
-type TermString string
-
-const (
-	TERM_DBL_SEMICOLON    = ";;"
-	TERM_NEWLINE          = "\n"
-	TERM_CARRIAGE_RETURRN = "\r"
-)
-
-type UnaryOp struct {
-	Pos Position       `parser:"", json:"pos"`
-	Op  *UnaryOpString `parser:"@('not' | '~' | 'nullify' | 'truify' | 'id')"`
+type WBString struct {
+	Value    string
+	Boundary WordBoundaryPolicy
 }
 
-type Lit struct {
-	Pos Position   `parser:"", json:"pos"`
-	Val *LitString `parser:"@('True' | 'False')"`
+func NewWBString(value string, boundary WordBoundaryPolicy) WBString {
+	return WBString{
+		Value:    value,
+		Boundary: boundary,
+	}
+}
+
+func (wbs WBString) String() string {
+	switch wbs.Boundary {
+	case LeftBoundary:
+		return `\b` + wbs.Value
+	case RightBoundary:
+		return wbs.Value + `\b`
+	case BothBoundaries:
+		return `\b` + wbs.Value + `\b`
+	default:
+		return wbs.Value
+	}
+}
+
+const (
+	TRUE  string = "True"
+	FALSE string = "False"
+)
+
+var (
+	TRUE_WB  WBString = NewWBString(TRUE, BothBoundaries)
+	FALSE_WB WBString = NewWBString(FALSE, BothBoundaries)
+)
+
+const (
+	NOT_TEXT     string = "not"
+	NOT_SYMB     string = "~"
+	NULLIFY_TEXT string = "nullify"
+	TRUIFY_TEXT  string = "truify"
+	ID_TEXT      string = "id"
+)
+
+var (
+	NOT_TEXT_WB     WBString = NewWBString(NOT_TEXT, BothBoundaries)
+	NULLIFY_TEXT_WB WBString = NewWBString(NULLIFY_TEXT, BothBoundaries)
+	TRUIFY_TEXT_WB  WBString = NewWBString(TRUIFY_TEXT, BothBoundaries)
+	ID_TEXT_WB      WBString = NewWBString(ID_TEXT, BothBoundaries)
+)
+
+const (
+	TERMINATOR_DBL_SEMICOLON    = ";;"
+	TERMINATOR_NEWLINE          = "\n"
+	TERMINATOR_CARRIAGE_RETURRN = "\r"
+)
+
+type TokenDef struct {
+	Name   string
+	Regex  string
+	String string
+	OneOf  []string
+}
+
+func BuildSimpleRules(tds []TokenDef) []lexer.SimpleRule {
+	var rules []lexer.SimpleRule
+	for _, td := range tds {
+		switch {
+		case td.Regex != "":
+			rules = append(rules, lexer.SimpleRule{
+				Name:    td.Name,
+				Pattern: td.Regex,
+			})
+		case 0 < len(td.String):
+			rules = append(rules, lexer.SimpleRule{
+				Name:    td.Name,
+				Pattern: td.String,
+			})
+		case 0 < len(td.OneOf):
+			joined := "(" + strings.Join(td.OneOf, "|") + ")"
+			rules = append(rules, lexer.SimpleRule{
+				Name:    td.Name,
+				Pattern: joined,
+			})
+		default:
+			panic("TokenDef has no Regex or Strings: " + td.Name)
+		}
+	}
+	return rules
+}
+
+var tokenDefinitions = []TokenDef{
+	{
+		Name:  "Whitespace",
+		Regex: `\s+`,
+	},
+	{
+		Name:   "DoubleSemicolon",
+		String: ";;",
+	},
+	{
+		Name:   "SingleSemicolon",
+		String: ";",
+	},
+	{
+		Name:   "LParen",
+		String: "\\(",
+	},
+	{
+		Name:   "RParen",
+		String: "\\)",
+	},
+	{
+		Name: "UnaryOpString",
+		OneOf: []string{
+			NOT_TEXT_WB.String(),
+			`~`,
+			NULLIFY_TEXT_WB.String(),
+			TRUIFY_TEXT_WB.String(),
+			ID_TEXT_WB.String(),
+		},
+	},
+	{
+		Name: "LitString",
+		OneOf: []string{
+			TRUE_WB.String(),
+			FALSE_WB.String(),
+		},
+	},
+	{
+		Name:  "Newline",
+		Regex: `(\r)?\n`,
+	},
+	{
+		Name:  "Ident",
+		Regex: `\b([a-zA-Z_][a-zA-Z0-9_]*)\b`,
+	},
+}
+
+var simpleRules = BuildSimpleRules(tokenDefinitions)
+
+var BooleanLexer = lexer.MustSimple(simpleRules)
+
+type UnaryOp struct {
+	Pos Position `parser:"", json:"pos"`
+	Op  string   `parser:"@UnaryOpString"`
 }
 
 type ParenExpr struct {
@@ -47,7 +170,7 @@ type ParenExpr struct {
 
 type PrimaryExpr struct {
 	Pos   Position   `parser:"", json:"pos"`
-	Lit   *Lit       `parser:"@@"`
+	Lit   string     `parser:"@LitString"`
 	Paren *ParenExpr `parser:"|@@"`
 }
 
@@ -63,8 +186,8 @@ type BooleanExpr struct {
 }
 
 type ExprTerminator struct {
-	Pos Position     `parser:"", json:"pos"`
-	Val []TermString `parser:"@(';;' | '(\\r)?\\n')+"`
+	Pos Position `parser:"", json:"pos"`
+	Val []string `parser:"@( DoubleSemicolon | Newline )+"`
 }
 
 type Expr struct {
@@ -79,6 +202,9 @@ type File struct {
 	EOF         string   `parser:"EOF"`
 }
 
-var BooleanParser = participle.MustBuild[File]()
+var BooleanParser = participle.MustBuild[File](
+	participle.Lexer(BooleanLexer),
+	participle.Elide("Whitespace"),
+)
 
 type Position = lexer.Position

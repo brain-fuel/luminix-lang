@@ -3,7 +3,7 @@ module acornlang.dev/lang/parser/boolean
 go 1.23.5
 
 require (
-	github.com/alecthomas/participle/v2 v2.1.1
+	github.com/alecthomas/participle/v2 v2.1.4
 	github.com/stretchr/testify v1.10.0
 )
 
