@@ -354,3 +354,19 @@ func TestNotSymb(t *testing.T) {
 		)
 	}
 }
+
+func TestAndFail(t *testing.T) {
+	tests := []struct {
+		input       string
+		expectedErr error
+	}{
+		{
+			input:       "and",
+			expectedErr: errors.New("1:1: unexpected token \"and\" (expected PrimaryExpr)"),
+		},
+	}
+	for _, test := range tests {
+		_, err := BooleanParser.ParseString("", test.input)
+		assert.EqualError(t, err, test.expectedErr.Error())
+	}
+}
