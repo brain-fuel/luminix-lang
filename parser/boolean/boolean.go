@@ -7,6 +7,40 @@ import (
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
+type WordBoundaryPolicy int
+
+const (
+	NoBoundary WordBoundaryPolicy = iota
+	LeftBoundary
+	RightBoundary
+	BothBoundaries
+)
+
+type WBString struct {
+	Value    string
+	Boundary WordBoundaryPolicy
+}
+
+func NewWBString(value string, boundary WordBoundaryPolicy) WBString {
+	return WBString{
+		Value:    value,
+		Boundary: boundary,
+	}
+}
+
+func (wbs WBString) String() string {
+	switch wbs.Boundary {
+	case LeftBoundary:
+		return `\b` + wbs.Value
+	case RightBoundary:
+		return wbs.Value + `\b`
+	case BothBoundaries:
+		return `\b` + wbs.Value + `\b`
+	default:
+		return wbs.Value
+	}
+}
+
 const (
 	TRUE  string = "True"
 	FALSE string = "False"
@@ -70,40 +104,6 @@ func BuildSimpleRules(tds []TokenDef) []lexer.SimpleRule {
 		}
 	}
 	return rules
-}
-
-type WordBoundaryPolicy int
-
-const (
-	NoBoundary WordBoundaryPolicy = iota
-	LeftBoundary
-	RightBoundary
-	BothBoundaries
-)
-
-type WBString struct {
-	Value    string
-	Boundary WordBoundaryPolicy
-}
-
-func NewWBString(value string, boundary WordBoundaryPolicy) WBString {
-	return WBString{
-		Value:    value,
-		Boundary: boundary,
-	}
-}
-
-func (wbs WBString) String() string {
-	switch wbs.Boundary {
-	case LeftBoundary:
-		return `\b` + wbs.Value
-	case RightBoundary:
-		return wbs.Value + `\b`
-	case BothBoundaries:
-		return `\b` + wbs.Value + `\b`
-	default:
-		return wbs.Value
-	}
 }
 
 var tokenDefinitions = []TokenDef{
