@@ -380,6 +380,27 @@ func TestAndFail(t *testing.T) {
 			input:       "not False and",
 			expectedErr: errors.New("1:11: unexpected token \"and\" (expected <eof>)"),
 		},
+		{
+			input:       "/\\",
+			expectedErr: errors.New("1:1: unexpected token \"/\\\\\" (expected PrimaryExpr)"),
+		},
+		{
+			input:       "True /\\",
+			expectedErr: errors.New("1:6: unexpected token \"/\\\\\" (expected <eof>)"),
+		},
+		{
+			input:       "False /\\",
+			expectedErr: errors.New("1:7: unexpected token \"/\\\\\" (expected <eof>)"),
+		},
+		{
+			input:       "not True /\\",
+			expectedErr: errors.New("1:10: unexpected token \"/\\\\\" (expected <eof>)"),
+		},
+		{
+			input: "not False /\\",
+
+			expectedErr: errors.New("1:11: unexpected token \"/\\\\\" (expected <eof>)"),
+		},
 	}
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test.input)
