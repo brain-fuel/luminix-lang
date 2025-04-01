@@ -364,6 +364,14 @@ func TestAndFail(t *testing.T) {
 			input:       "and",
 			expectedErr: errors.New("1:1: unexpected token \"and\" (expected PrimaryExpr)"),
 		},
+		{
+			input:       "True and",
+			expectedErr: errors.New("error"),
+		},
+		{
+			input:       "True and True",
+			expectedErr: errors.New("error"),
+		},
 	}
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test.input)

@@ -7,55 +7,48 @@ import (
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
-type UnOp string
-
 const (
-	// NOT_TEXT UnOp = "not"
-	// NOT_SYMB UnOp = "~"
-	FALSE_OP UnOp = "nullify"
-	TRUE_OP  UnOp = "truify"
-	ID       UnOp = "id"
+	FALSE_OP string = "nullify"
+	TRUE_OP  string = "truify"
+	ID       string = "id"
 )
 
-type BinOp string
-
 const (
-	AND_TEXT  BinOp = "and"
-	AND_SYMB  BinOp = "/\\"
-	NAND_TEXT BinOp = "nand"
-	NAND_SYMB BinOp = "~/\\"
+	AND_SYMB  string = "/\\"
+	NAND_TEXT string = "nand"
+	NAND_SYMB string = "~/\\"
 
-	OR_TEXT  BinOp = "or"
-	OR_SYMB  BinOp = "\\/"
-	NOR_TEXT BinOp = "nor"
-	NOR_SYMB BinOp = "~\\/"
+	OR_TEXT  string = "or"
+	OR_SYMB  string = "\\/"
+	NOR_TEXT string = "nor"
+	NOR_SYMB string = "~\\/"
 
-	XNOR_TEXT BinOp = "xnor"
-	IFF_TEXT  BinOp = "iff"
-	XNOR_SYMB BinOp = "<=>"
+	XNOR_TEXT string = "xnor"
+	IFF_TEXT  string = "iff"
+	XNOR_SYMB string = "<=>"
 
-	XOR_TEXT BinOp = "xor"
-	XOR_SYMB BinOp = "<~>"
+	XOR_TEXT string = "xor"
+	XOR_SYMB string = "<~>"
 
-	IMPLIES_TEXT    BinOp = "implies"
-	IMPLIES_SYMB    BinOp = "=>"
-	IMPLIED_BY_TEXT BinOp = "is implied by"
-	IMPLIED_BY_SYMB BinOp = "<="
+	IMPLIES_TEXT    string = "implies"
+	IMPLIES_SYMB    string = "=>"
+	IMPLIED_BY_TEXT string = "is implied by"
+	IMPLIED_BY_SYMB string = "<="
 
-	INHIBITS_TEXT     BinOp = "inhibits"
-	INHIBITS_SYMB     BinOp = "/=>"
-	INHIBITED_BY_TEXT BinOp = "is inhibited by"
-	INHIBITED_BY_SYMB BinOp = "<=/"
+	INHIBITS_TEXT     string = "inhibits"
+	INHIBITS_SYMB     string = "/=>"
+	INHIBITED_BY_TEXT string = "is inhibited by"
+	INHIBITED_BY_SYMB string = "<=/"
 
-	LEFT_TEXT  BinOp = "left"
-	LEFT_SYMB  BinOp = "<s"
-	RIGHT_TEXT BinOp = "right"
-	RIGHT_SYMB BinOp = "s>"
+	LEFT_TEXT  string = "left"
+	LEFT_SYMB  string = "<s"
+	RIGHT_TEXT string = "right"
+	RIGHT_SYMB string = "s>"
 
-	NOT_LEFT_TEXT  BinOp = "not left"
-	NOT_LEFT_SYMB  BinOp = "</"
-	NOT_RIGHT_TEXT BinOp = "not right"
-	NOT_RIGHT_SYMB BinOp = "/>"
+	NOT_LEFT_TEXT  string = "not left"
+	NOT_LEFT_SYMB  string = "</"
+	NOT_RIGHT_TEXT string = "not right"
+	NOT_RIGHT_SYMB string = "/>"
 )
 
 var BoolParser = participle.MustBuild[BoolExpr](
@@ -73,13 +66,13 @@ var BoolParser = participle.MustBuild[BoolExpr](
 )
 
 type BoolExpr struct {
-	OptUnOps []UnOp       `@("not" | "~" | "nullify" | "truify" | "id")*`
+	OptUnOps []string     `@("not" | "~" | "nullify" | "truify" | "id")*`
 	Left     *BoolTerm    `@@`
 	Rest     []*BinOpTerm `@@*`
 }
 
 type BinOpTerm struct {
-	BinOp BinOp     `@("and" | "/\\" | "nand" | "~/\\" | "or" | "\\/" | "nor" | "xnor" | "iff" | "<=>" | "xor" | "<~>" | "~\\/" | "implies" | "=>" | "is implied by" | "<=" | "inhibits" | "/=>" | "is inhibited by" | "<=/" | "left" | "<s" | "right" | "s>" | "not left" | "</" | "not right" | "/>")`
+	BinOp string    `@("and" | "/\\" | "nand" | "~/\\" | "or" | "\\/" | "nor" | "xnor" | "iff" | "<=>" | "xor" | "<~>" | "~\\/" | "implies" | "=>" | "is implied by" | "<=" | "inhibits" | "/=>" | "is inhibited by" | "<=/" | "left" | "<s" | "right" | "s>" | "not left" | "</" | "not right" | "/>")`
 	Right *BoolTerm `@@`
 }
 

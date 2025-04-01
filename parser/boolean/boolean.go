@@ -67,6 +67,12 @@ var (
 )
 
 const (
+	AND_TEXT string = "and"
+)
+
+var AND_TEXT_WB WBString = NewWBString(AND_TEXT, BothBoundaries)
+
+const (
 	TERMINATOR_DBL_SEMICOLON    = ";;"
 	TERMINATOR_NEWLINE          = "\n"
 	TERMINATOR_CARRIAGE_RETURRN = "\r"
@@ -128,6 +134,10 @@ var tokenDefinitions = []TokenDef{
 		String: "\\)",
 	},
 	{
+		Name:   "BinaryOpString",
+		String: AND_TEXT_WB.String(),
+	},
+	{
 		Name: "UnaryOpString",
 		OneOf: []string{
 			NOT_TEXT_WB.String(),
@@ -180,14 +190,21 @@ type UnaryExpr struct {
 	Expr *PrimaryExpr `parser:"@@"`
 }
 
+type BooleanExprRest struct {
+	Pos  Position     `parser:"", json:"pos"`
+	Op   string       `parser:"@BinaryOpString"`
+	Expr *BooleanExpr `parser:"@@"`
+}
+
 type BooleanExpr struct {
-	Pos   Position   `parser:"", json:"pos"`
-	Unary *UnaryExpr `parser:"@@"`
+	Pos   Position         `parser:"", json:"pos"`
+	Unary *UnaryExpr       `parser:"@@"`
+	Rest  *BooleanExprRest `parser:"(@@)?"`
 }
 
 type ExprTerminator struct {
 	Pos Position `parser:"", json:"pos"`
-	Val []string `parser:"@( DoubleSemicolon | Newline )+"`
+	Val []string `parser:"@(DoubleSemicolon|Newline)+"`
 }
 
 type Expr struct {
