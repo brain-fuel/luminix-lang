@@ -152,12 +152,7 @@ var BooleanLexer = lexer.MustSimple(simpleRules)
 
 type UnaryOp struct {
 	Pos Position `parser:"", json:"pos"`
-	Op  *string  `parser:"@UnaryOpString"`
-}
-
-type Lit struct {
-	Pos Position `parser:"", json:"pos"`
-	Val *string  `parser:"@LitString"`
+	Op  string   `parser:"@UnaryOpString"`
 }
 
 type ParenExpr struct {
@@ -167,7 +162,7 @@ type ParenExpr struct {
 
 type PrimaryExpr struct {
 	Pos   Position   `parser:"", json:"pos"`
-	Lit   *Lit       `parser:"@@"`
+	Lit   string     `parser:"@LitString"`
 	Paren *ParenExpr `parser:"|@@"`
 }
 
