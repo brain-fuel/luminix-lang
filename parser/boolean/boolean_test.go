@@ -366,11 +366,19 @@ func TestAndFail(t *testing.T) {
 		},
 		{
 			input:       "True and",
-			expectedErr: errors.New("error"),
+			expectedErr: errors.New("1:6: unexpected token \"and\" (expected <eof>)"),
 		},
 		{
-			input:       "True and True",
-			expectedErr: errors.New("error"),
+			input:       "False and",
+			expectedErr: errors.New("1:7: unexpected token \"and\" (expected <eof>)"),
+		},
+		{
+			input:       "not True and",
+			expectedErr: errors.New("1:10: unexpected token \"and\" (expected <eof>)"),
+		},
+		{
+			input:       "not False and",
+			expectedErr: errors.New("1:11: unexpected token \"and\" (expected <eof>)"),
 		},
 	}
 	for _, test := range tests {
