@@ -354,3 +354,134 @@ func TestNotSymb(t *testing.T) {
 		)
 	}
 }
+
+func TestAndFail(t *testing.T) {
+	tests := []struct {
+		input       string
+		expectedErr error
+	}{
+		{
+			input:       "and",
+			expectedErr: errors.New("1:1: unexpected token \"and\" (expected PrimaryExpr)"),
+		},
+		{
+			input:       "True and",
+			expectedErr: errors.New("1:6: unexpected token \"and\" (expected <eof>)"),
+		},
+		{
+			input:       "False and",
+			expectedErr: errors.New("1:7: unexpected token \"and\" (expected <eof>)"),
+		},
+		{
+			input:       "not True and",
+			expectedErr: errors.New("1:10: unexpected token \"and\" (expected <eof>)"),
+		},
+		{
+			input:       "not False and",
+			expectedErr: errors.New("1:11: unexpected token \"and\" (expected <eof>)"),
+		},
+		{
+			input:       "/\\",
+			expectedErr: errors.New("1:1: unexpected token \"/\\\\\" (expected PrimaryExpr)"),
+		},
+		{
+			input:       "True /\\",
+			expectedErr: errors.New("1:6: unexpected token \"/\\\\\" (expected <eof>)"),
+		},
+		{
+			input:       "False /\\",
+			expectedErr: errors.New("1:7: unexpected token \"/\\\\\" (expected <eof>)"),
+		},
+		{
+			input:       "not True /\\",
+			expectedErr: errors.New("1:10: unexpected token \"/\\\\\" (expected <eof>)"),
+		},
+		{
+			input: "not False /\\",
+
+			expectedErr: errors.New("1:11: unexpected token \"/\\\\\" (expected <eof>)"),
+		},
+	}
+	for _, test := range tests {
+		_, err := BooleanParser.ParseString("", test.input)
+		assert.EqualError(t, err, test.expectedErr.Error())
+	}
+}
+
+func TestAndSuccess(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{
+			input:    "False and False",
+			expected: AND_TEXT,
+		},
+		{
+			input:    "False and True",
+			expected: AND_TEXT,
+		},
+		{
+			input:    "True and False",
+			expected: AND_TEXT,
+		},
+		{
+			input:    "True and True",
+			expected: AND_TEXT,
+		},
+		{
+			input:    "not False and False",
+			expected: AND_TEXT,
+		},
+		{
+			input:    "not False and True",
+			expected: AND_TEXT,
+		},
+		{
+			input:    "not True and False",
+			expected: AND_TEXT,
+		},
+		{
+			input:    "not True and True",
+			expected: AND_TEXT,
+		},
+		{
+			input:    "False /\\ False",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "False /\\ True",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "True /\\ False",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "True /\\ True",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "not False /\\ False",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "not False /\\ True",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "not True /\\ False",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "not True /\\ True",
+			expected: AND_SYMB,
+		},
+	}
+	for _, test := range tests {
+		res, err := BooleanParser.ParseString("", test.input)
+		actual := res.Expressions[0].Bool.Rest.Op
+		assert.NoError(t, err)
+		assert.Equal(t, actual, test.expected)
+	}
+}

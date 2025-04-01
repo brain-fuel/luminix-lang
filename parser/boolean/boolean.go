@@ -1,6 +1,7 @@
 package boolean
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/alecthomas/participle/v2"
@@ -16,28 +17,29 @@ const (
 	BothBoundaries
 )
 
-type WBString struct {
+type EscapedAndWBString struct {
 	Value    string
 	Boundary WordBoundaryPolicy
 }
 
-func NewWBString(value string, boundary WordBoundaryPolicy) WBString {
-	return WBString{
+func NewEscapedAndWBString(value string, boundary WordBoundaryPolicy) EscapedAndWBString {
+	return EscapedAndWBString{
 		Value:    value,
 		Boundary: boundary,
 	}
 }
 
-func (wbs WBString) String() string {
+func (wbs EscapedAndWBString) String() string {
+	value := regexp.QuoteMeta(wbs.Value)
 	switch wbs.Boundary {
 	case LeftBoundary:
-		return `\b` + wbs.Value
+		return `\b` + value
 	case RightBoundary:
-		return wbs.Value + `\b`
+		return value + `\b`
 	case BothBoundaries:
-		return `\b` + wbs.Value + `\b`
+		return `\b` + value + `\b`
 	default:
-		return wbs.Value
+		return value
 	}
 }
 
@@ -47,8 +49,8 @@ const (
 )
 
 var (
-	TRUE_WB  WBString = NewWBString(TRUE, BothBoundaries)
-	FALSE_WB WBString = NewWBString(FALSE, BothBoundaries)
+	TRUE_WB  EscapedAndWBString = NewEscapedAndWBString(TRUE, BothBoundaries)
+	FALSE_WB EscapedAndWBString = NewEscapedAndWBString(FALSE, BothBoundaries)
 )
 
 const (
@@ -60,10 +62,20 @@ const (
 )
 
 var (
-	NOT_TEXT_WB     WBString = NewWBString(NOT_TEXT, BothBoundaries)
-	NULLIFY_TEXT_WB WBString = NewWBString(NULLIFY_TEXT, BothBoundaries)
-	TRUIFY_TEXT_WB  WBString = NewWBString(TRUIFY_TEXT, BothBoundaries)
-	ID_TEXT_WB      WBString = NewWBString(ID_TEXT, BothBoundaries)
+	NOT_TEXT_WB     EscapedAndWBString = NewEscapedAndWBString(NOT_TEXT, BothBoundaries)
+	NULLIFY_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(NULLIFY_TEXT, BothBoundaries)
+	TRUIFY_TEXT_WB  EscapedAndWBString = NewEscapedAndWBString(TRUIFY_TEXT, BothBoundaries)
+	ID_TEXT_WB      EscapedAndWBString = NewEscapedAndWBString(ID_TEXT, BothBoundaries)
+)
+
+const (
+	AND_TEXT string = "and"
+	AND_SYMB string = "/\\"
+)
+
+var (
+	AND_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(AND_TEXT, BothBoundaries)
+	AND_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(AND_SYMB, NoBoundary)
 )
 
 const (
@@ -128,6 +140,13 @@ var tokenDefinitions = []TokenDef{
 		String: "\\)",
 	},
 	{
+		Name: "BinaryOpString",
+		OneOf: []string{
+			AND_TEXT_WB.String(),
+			AND_SYMB_WB.String(),
+		},
+	},
+	{
 		Name: "UnaryOpString",
 		OneOf: []string{
 			NOT_TEXT_WB.String(),
@@ -180,14 +199,21 @@ type UnaryExpr struct {
 	Expr *PrimaryExpr `parser:"@@"`
 }
 
+type BooleanExprRest struct {
+	Pos  Position     `parser:"", json:"pos"`
+	Op   string       `parser:"@BinaryOpString"`
+	Expr *BooleanExpr `parser:"@@"`
+}
+
 type BooleanExpr struct {
-	Pos   Position   `parser:"", json:"pos"`
-	Unary *UnaryExpr `parser:"@@"`
+	Pos   Position         `parser:"", json:"pos"`
+	Unary *UnaryExpr       `parser:"@@"`
+	Rest  *BooleanExprRest `parser:"(@@)?"`
 }
 
 type ExprTerminator struct {
 	Pos Position `parser:"", json:"pos"`
-	Val []string `parser:"@( DoubleSemicolon | Newline )+"`
+	Val []string `parser:"@(DoubleSemicolon|Newline)+"`
 }
 
 type Expr struct {
