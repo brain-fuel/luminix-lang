@@ -394,35 +394,67 @@ func TestAndSuccess(t *testing.T) {
 	}{
 		{
 			input:    "False and False",
-			expected: "and",
+			expected: AND_TEXT,
 		},
 		{
 			input:    "False and True",
-			expected: "and",
+			expected: AND_TEXT,
 		},
 		{
 			input:    "True and False",
-			expected: "and",
+			expected: AND_TEXT,
 		},
 		{
 			input:    "True and True",
-			expected: "and",
+			expected: AND_TEXT,
 		},
 		{
 			input:    "not False and False",
-			expected: "and",
+			expected: AND_TEXT,
 		},
 		{
 			input:    "not False and True",
-			expected: "and",
+			expected: AND_TEXT,
 		},
 		{
 			input:    "not True and False",
-			expected: "and",
+			expected: AND_TEXT,
 		},
 		{
 			input:    "not True and True",
-			expected: "and",
+			expected: AND_TEXT,
+		},
+		{
+			input:    "False /\\ False",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "False /\\ True",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "True /\\ False",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "True /\\ True",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "not False /\\ False",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "not False /\\ True",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "not True /\\ False",
+			expected: AND_SYMB,
+		},
+		{
+			input:    "not True /\\ True",
+			expected: AND_SYMB,
 		},
 	}
 	for _, test := range tests {

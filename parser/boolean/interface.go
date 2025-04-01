@@ -14,7 +14,6 @@ const (
 )
 
 const (
-	AND_SYMB  string = "/\\"
 	NAND_TEXT string = "nand"
 	NAND_SYMB string = "~/\\"
 
