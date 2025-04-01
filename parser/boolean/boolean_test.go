@@ -386,3 +386,49 @@ func TestAndFail(t *testing.T) {
 		assert.EqualError(t, err, test.expectedErr.Error())
 	}
 }
+
+func TestAndSuccess(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{
+			input:    "False and False",
+			expected: "and",
+		},
+		{
+			input:    "False and True",
+			expected: "and",
+		},
+		{
+			input:    "True and False",
+			expected: "and",
+		},
+		{
+			input:    "True and True",
+			expected: "and",
+		},
+		{
+			input:    "not False and False",
+			expected: "and",
+		},
+		{
+			input:    "not False and True",
+			expected: "and",
+		},
+		{
+			input:    "not True and False",
+			expected: "and",
+		},
+		{
+			input:    "not True and True",
+			expected: "and",
+		},
+	}
+	for _, test := range tests {
+		res, err := BooleanParser.ParseString("", test.input)
+		actual := res.Expressions[0].Bool.Rest.Op
+		assert.NoError(t, err)
+		assert.Equal(t, actual, test.expected)
+	}
+}
