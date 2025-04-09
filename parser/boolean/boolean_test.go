@@ -408,76 +408,71 @@ func TestAndFail(t *testing.T) {
 	}
 }
 
-func TestAndSuccess(t *testing.T) {
-	tests := []struct {
+func produceBinopTestCases(binops ...string) []struct {
+	input    string
+	expected string
+} {
+	if len(binops) == 0 {
+		panic("produceBinopTestCases takes at least 1 string argument")
+	}
+	testCases := []struct {
+		input    string
+		expected string
+	}{}
+	for _, binop := range binops {
+		testCases = append(produceSingleBinopTestCaseSet(binop))
+	}
+	return testCases
+}
+
+func produceSingleBinopTestCaseSet(binop string) []struct {
+	input    string
+	expected string
+} {
+	return []struct {
 		input    string
 		expected string
 	}{
 		{
-			input:    "False and False",
-			expected: AND_TEXT,
+			input:    "False " + binop + " False",
+			expected: binop,
 		},
 		{
-			input:    "False and True",
-			expected: AND_TEXT,
+			input:    "False " + binop + " True",
+			expected: binop,
 		},
 		{
-			input:    "True and False",
-			expected: AND_TEXT,
+			input:    "True " + binop + " False",
+			expected: binop,
 		},
 		{
-			input:    "True and True",
-			expected: AND_TEXT,
+			input:    "True " + binop + " True",
+			expected: binop,
 		},
 		{
-			input:    "not False and False",
-			expected: AND_TEXT,
+			input:    "not False " + binop + " False",
+			expected: binop,
 		},
 		{
-			input:    "not False and True",
-			expected: AND_TEXT,
+			input:    "not False " + binop + " True",
+			expected: binop,
 		},
 		{
-			input:    "not True and False",
-			expected: AND_TEXT,
+			input:    "not True " + binop + " False",
+			expected: binop,
 		},
 		{
-			input:    "not True and True",
-			expected: AND_TEXT,
-		},
-		{
-			input:    "False /\\ False",
-			expected: AND_SYMB,
-		},
-		{
-			input:    "False /\\ True",
-			expected: AND_SYMB,
-		},
-		{
-			input:    "True /\\ False",
-			expected: AND_SYMB,
-		},
-		{
-			input:    "True /\\ True",
-			expected: AND_SYMB,
-		},
-		{
-			input:    "not False /\\ False",
-			expected: AND_SYMB,
-		},
-		{
-			input:    "not False /\\ True",
-			expected: AND_SYMB,
-		},
-		{
-			input:    "not True /\\ False",
-			expected: AND_SYMB,
-		},
-		{
-			input:    "not True /\\ True",
-			expected: AND_SYMB,
+			input:    "not True " + binop + " True",
+			expected: binop,
 		},
 	}
+}
+
+func TestBinopSuccess(t *testing.T) {
+	tests := produceBinopTestCases(
+		AND_TEXT,
+		AND_SYMB,
+	)
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test.input)
 		actual := res.Expressions[0].Bool.Rest.Op
