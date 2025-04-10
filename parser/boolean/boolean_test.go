@@ -409,31 +409,26 @@ func TestNotSymb(t *testing.T) {
 		}
 	}
 */
-func produceBinopTestCases(binops ...string) []struct {
+
+type SuccessfulBinopTestCase struct {
 	input    string
 	expected string
-} {
+}
+
+func produceBinopTestCases(binops ...string) []SuccessfulBinopTestCase {
 	if len(binops) == 0 {
 		panic("produceBinopTestCases takes at least 1 string argument")
 	}
-	testCases := []struct {
-		input    string
-		expected string
-	}{}
+	testCases := []SuccessfulBinopTestCase{}
 	for _, binop := range binops {
-		testCases = append(produceSingleBinopTestCaseSet(binop))
+		newTestCases := produceSingleBinopTestCaseSet(binop)
+		testCases = append(testCases, newTestCases...)
 	}
 	return testCases
 }
 
-func produceSingleBinopTestCaseSet(binop string) []struct {
-	input    string
-	expected string
-} {
-	return []struct {
-		input    string
-		expected string
-	}{
+func produceSingleBinopTestCaseSet(binop string) []SuccessfulBinopTestCase {
+	return []SuccessfulBinopTestCase{
 		{
 			input:    "False " + binop + " False",
 			expected: binop,
@@ -483,7 +478,6 @@ func TestBinopSuccess(t *testing.T) {
 		XNOR_TEXT,
 		IFF_TEXT,
 		XNOR_SYMB,
-
 		XOR_TEXT,
 		XOR_SYMB,
 

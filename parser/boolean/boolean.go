@@ -85,15 +85,15 @@ const (
 	XOR_TEXT string = "xor"
 	XOR_SYMB string = "<~>"
 
-	IMPLIES_TEXT    string = "implies"
-	IMPLIES_SYMB    string = "=>"
-	IMPLIED_BY_TEXT string = "is implied by"
-	IMPLIED_BY_SYMB string = "<="
-
 	INHIBITS_TEXT     string = "inhibits"
 	INHIBITS_SYMB     string = "/=>"
 	INHIBITED_BY_TEXT string = "is inhibited by"
 	INHIBITED_BY_SYMB string = "<=/"
+
+	IMPLIES_TEXT    string = "implies"
+	IMPLIES_SYMB    string = "=>"
+	IMPLIED_BY_TEXT string = "is implied by"
+	IMPLIED_BY_SYMB string = "<="
 
 	LEFT_TEXT  string = "left"
 	LEFT_SYMB  string = "<s"
@@ -130,7 +130,10 @@ var (
 
 	INHIBITS_TEXT_WB     EscapedAndWBString = NewEscapedAndWBString(INHIBITS_TEXT, BothBoundaries)
 	INHIBITS_SYMB_WB     EscapedAndWBString = NewEscapedAndWBString(INHIBITS_SYMB, NoBoundary)
-	INHIBITED_BY_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(INHIBITED_BY_TEXT, BothBoundaries)
+	INHIBITED_BY_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(
+		INHIBITED_BY_TEXT,
+		BothBoundaries,
+	)
 	INHIBITED_BY_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(INHIBITED_BY_SYMB, NoBoundary)
 
 	LEFT_TEXT_WB  EscapedAndWBString = NewEscapedAndWBString(LEFT_TEXT, BothBoundaries)
@@ -209,40 +212,40 @@ var tokenDefinitions = []TokenDef{
 		Name: "BinaryOpString",
 		OneOf: []string{
 			AND_TEXT_WB.String(),
-			AND_SYMB_WB.String(),
+			regexp.QuoteMeta(AND_SYMB),
 			NAND_TEXT_WB.String(),
-			NAND_SYMB_WB.String(),
+			regexp.QuoteMeta(NAND_SYMB),
 			OR_TEXT_WB.String(),
-			OR_SYMB_WB.String(),
+			regexp.QuoteMeta(OR_SYMB),
 			NOR_TEXT_WB.String(),
-			NOR_SYMB_WB.String(),
+			regexp.QuoteMeta(NOR_SYMB),
 
 			XNOR_TEXT_WB.String(),
 			IFF_TEXT_WB.String(),
-			XNOR_SYMB_WB.String(),
-
-			XOR_TEXT_WB.String(),
-			XOR_SYMB_WB.String(),
-
-			IMPLIES_TEXT_WB.String(),
-			IMPLIES_SYMB_WB.String(),
-			IMPLIED_BY_TEXT_WB.String(),
-			IMPLIED_BY_SYMB_WB.String(),
+			regexp.QuoteMeta(XNOR_SYMB),
 
 			INHIBITS_TEXT_WB.String(),
-			INHIBITS_SYMB_WB.String(),
+			regexp.QuoteMeta(INHIBITS_SYMB),
 			INHIBITED_BY_TEXT_WB.String(),
-			INHIBITED_BY_SYMB_WB.String(),
+			regexp.QuoteMeta(INHIBITED_BY_SYMB),
+
+			XOR_TEXT_WB.String(),
+			regexp.QuoteMeta(XOR_SYMB),
+
+			IMPLIES_TEXT_WB.String(),
+			regexp.QuoteMeta(IMPLIES_SYMB),
+			IMPLIED_BY_TEXT_WB.String(),
+			regexp.QuoteMeta(IMPLIED_BY_SYMB),
 
 			LEFT_TEXT_WB.String(),
-			LEFT_SYMB_WB.String(),
+			regexp.QuoteMeta(LEFT_SYMB),
 			RIGHT_TEXT_WB.String(),
-			RIGHT_SYMB_WB.String(),
+			regexp.QuoteMeta(RIGHT_SYMB),
 
 			NOT_LEFT_TEXT_WB.String(),
-			NOT_LEFT_SYMB_WB.String(),
+			regexp.QuoteMeta(NOT_LEFT_SYMB),
 			NOT_RIGHT_TEXT_WB.String(),
-			NOT_RIGHT_SYMB_WB.String(),
+			regexp.QuoteMeta(NOT_RIGHT_SYMB),
 		},
 	},
 	{
