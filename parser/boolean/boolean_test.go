@@ -3,6 +3,7 @@ package boolean
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -361,59 +362,79 @@ type FailingBinopTestCase struct {
 }
 
 func produceBinopFailingTestCases(binops ...string) []FailingBinopTestCase {
+	if len(binops) == 0 {
+		panic("produceBinopFailingTestCases takes at least 1 string argument")
+	}
 	testCases := []FailingBinopTestCase{}
-	newTestCases := produceSingleBinopFailingTestCaseSet()
-	testCases = append(testCases, newTestCases...)
+	for _, binop := range binops {
+		newTestCases := produceSingleBinopFailingTestCaseSet(binop)
+		testCases = append(testCases, newTestCases...)
+	}
 	return testCases
 }
 
-func produceSingleBinopFailingTestCaseSet() []FailingBinopTestCase {
+func produceSingleBinopFailingTestCaseSet(binop string) []FailingBinopTestCase {
+	escaped := regexp.QuoteMeta(binop)
 	return []FailingBinopTestCase{
 		{
-			input:       "and",
-			expectedErr: errors.New("1:1: unexpected token \"and\" (expected PrimaryExpr)"),
+			input:       binop,
+			expectedErr: fmt.Errorf("1:1: unexpected token \"%s\" (expected PrimaryExpr)", escaped),
 		},
 		{
-			input:       "True and",
-			expectedErr: errors.New("1:6: unexpected token \"and\" (expected <eof>)"),
+			input:       "True " + binop,
+			expectedErr: fmt.Errorf("1:6: unexpected token \"%s\" (expected <eof>)", escaped),
 		},
 		{
-			input:       "False and",
-			expectedErr: errors.New("1:7: unexpected token \"and\" (expected <eof>)"),
+			input:       "False " + binop,
+			expectedErr: fmt.Errorf("1:7: unexpected token \"%s\" (expected <eof>)", escaped),
 		},
 		{
-			input:       "not True and",
-			expectedErr: errors.New("1:10: unexpected token \"and\" (expected <eof>)"),
+			input:       "not True " + binop,
+			expectedErr: fmt.Errorf("1:10: unexpected token \"%s\" (expected <eof>)", escaped),
 		},
 		{
-			input:       "not False and",
-			expectedErr: errors.New("1:11: unexpected token \"and\" (expected <eof>)"),
-		},
-		{
-			input:       "/\\",
-			expectedErr: errors.New("1:1: unexpected token \"/\\\\\" (expected PrimaryExpr)"),
-		},
-		{
-			input:       "True /\\",
-			expectedErr: errors.New("1:6: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
-		{
-			input:       "False /\\",
-			expectedErr: errors.New("1:7: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
-		{
-			input:       "not True /\\",
-			expectedErr: errors.New("1:10: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
-		{
-			input: "not False /\\",
-
-			expectedErr: errors.New("1:11: unexpected token \"/\\\\\" (expected <eof>)"),
+			input:       "not False " + binop,
+			expectedErr: fmt.Errorf("1:11: unexpected token \"%s\" (expected <eof>)", escaped),
 		},
 	}
 }
 func TestBinopFail(t *testing.T) {
-	tests := produceBinopFailingTestCases()
+	tests := produceBinopFailingTestCases(
+		AND_TEXT,
+		AND_SYMB,
+		NAND_TEXT,
+		NAND_SYMB,
+		OR_TEXT,
+		OR_SYMB,
+		NOR_TEXT,
+		NOR_SYMB,
+
+		XNOR_TEXT,
+		IFF_TEXT,
+		XNOR_SYMB,
+		XOR_TEXT,
+		XOR_SYMB,
+
+		IMPLIES_TEXT,
+		IMPLIES_SYMB,
+		IMPLIED_BY_TEXT,
+		IMPLIED_BY_SYMB,
+
+		INHIBITS_TEXT,
+		INHIBITS_SYMB,
+		INHIBITED_BY_TEXT,
+		INHIBITED_BY_SYMB,
+
+		LEFT_TEXT,
+		LEFT_SYMB,
+		RIGHT_TEXT,
+		RIGHT_SYMB,
+
+		NOT_LEFT_TEXT,
+		NOT_LEFT_SYMB,
+		NOT_RIGHT_TEXT,
+		NOT_RIGHT_SYMB,
+	)
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test.input)
 		assert.EqualError(t, err, test.expectedErr.Error())
