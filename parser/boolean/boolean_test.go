@@ -3,6 +3,7 @@ package boolean
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -355,84 +356,110 @@ func TestNotSymb(t *testing.T) {
 	}
 }
 
-func TestAndFail(t *testing.T) {
-	tests := []struct {
-		input       string
-		expectedErr error
-	}{
-		{
-			input:       "and",
-			expectedErr: errors.New("1:1: unexpected token \"and\" (expected PrimaryExpr)"),
-		},
-		{
-			input:       "True and",
-			expectedErr: errors.New("1:6: unexpected token \"and\" (expected <eof>)"),
-		},
-		{
-			input:       "False and",
-			expectedErr: errors.New("1:7: unexpected token \"and\" (expected <eof>)"),
-		},
-		{
-			input:       "not True and",
-			expectedErr: errors.New("1:10: unexpected token \"and\" (expected <eof>)"),
-		},
-		{
-			input:       "not False and",
-			expectedErr: errors.New("1:11: unexpected token \"and\" (expected <eof>)"),
-		},
-		{
-			input:       "/\\",
-			expectedErr: errors.New("1:1: unexpected token \"/\\\\\" (expected PrimaryExpr)"),
-		},
-		{
-			input:       "True /\\",
-			expectedErr: errors.New("1:6: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
-		{
-			input:       "False /\\",
-			expectedErr: errors.New("1:7: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
-		{
-			input:       "not True /\\",
-			expectedErr: errors.New("1:10: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
-		{
-			input: "not False /\\",
+type FailingBinopTestCase struct {
+	input       string
+	expectedErr error
+}
 
-			expectedErr: errors.New("1:11: unexpected token \"/\\\\\" (expected <eof>)"),
+func produceBinopFailingTestCases(binops ...string) []FailingBinopTestCase {
+	if len(binops) == 0 {
+		panic("produceBinopFailingTestCases takes at least 1 string argument")
+	}
+	testCases := []FailingBinopTestCase{}
+	for _, binop := range binops {
+		newTestCases := produceSingleBinopFailingTestCaseSet(binop)
+		testCases = append(testCases, newTestCases...)
+	}
+	return testCases
+}
+
+func produceSingleBinopFailingTestCaseSet(binop string) []FailingBinopTestCase {
+	escaped := regexp.QuoteMeta(binop)
+	return []FailingBinopTestCase{
+		{
+			input:       binop,
+			expectedErr: fmt.Errorf("1:1: unexpected token \"%s\" (expected PrimaryExpr)", escaped),
+		},
+		{
+			input:       "True " + binop,
+			expectedErr: fmt.Errorf("1:6: unexpected token \"%s\" (expected <eof>)", escaped),
+		},
+		{
+			input:       "False " + binop,
+			expectedErr: fmt.Errorf("1:7: unexpected token \"%s\" (expected <eof>)", escaped),
+		},
+		{
+			input:       "not True " + binop,
+			expectedErr: fmt.Errorf("1:10: unexpected token \"%s\" (expected <eof>)", escaped),
+		},
+		{
+			input:       "not False " + binop,
+			expectedErr: fmt.Errorf("1:11: unexpected token \"%s\" (expected <eof>)", escaped),
 		},
 	}
+}
+func TestBinopFail(t *testing.T) {
+	tests := produceBinopFailingTestCases(
+		AND_TEXT,
+		AND_SYMB,
+		NAND_TEXT,
+		NAND_SYMB,
+		OR_TEXT,
+		OR_SYMB,
+		NOR_TEXT,
+		NOR_SYMB,
+
+		XNOR_TEXT,
+		IFF_TEXT,
+		XNOR_SYMB,
+		XOR_TEXT,
+		XOR_SYMB,
+
+		IMPLIES_TEXT,
+		IMPLIES_SYMB,
+		IMPLIED_BY_TEXT,
+		IMPLIED_BY_SYMB,
+
+		INHIBITS_TEXT,
+		INHIBITS_SYMB,
+		INHIBITED_BY_TEXT,
+		INHIBITED_BY_SYMB,
+
+		LEFT_TEXT,
+		LEFT_SYMB,
+		RIGHT_TEXT,
+		RIGHT_SYMB,
+
+		NOT_LEFT_TEXT,
+		NOT_LEFT_SYMB,
+		NOT_RIGHT_TEXT,
+		NOT_RIGHT_SYMB,
+	)
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test.input)
 		assert.EqualError(t, err, test.expectedErr.Error())
 	}
 }
 
-func produceBinopTestCases(binops ...string) []struct {
+type SuccessfulBinopTestCase struct {
 	input    string
 	expected string
-} {
+}
+
+func produceBinopTestCases(binops ...string) []SuccessfulBinopTestCase {
 	if len(binops) == 0 {
 		panic("produceBinopTestCases takes at least 1 string argument")
 	}
-	testCases := []struct {
-		input    string
-		expected string
-	}{}
+	testCases := []SuccessfulBinopTestCase{}
 	for _, binop := range binops {
-		testCases = append(produceSingleBinopTestCaseSet(binop))
+		newTestCases := produceSingleBinopTestCaseSet(binop)
+		testCases = append(testCases, newTestCases...)
 	}
 	return testCases
 }
 
-func produceSingleBinopTestCaseSet(binop string) []struct {
-	input    string
-	expected string
-} {
-	return []struct {
-		input    string
-		expected string
-	}{
+func produceSingleBinopTestCaseSet(binop string) []SuccessfulBinopTestCase {
+	return []SuccessfulBinopTestCase{
 		{
 			input:    "False " + binop + " False",
 			expected: binop,
@@ -472,6 +499,38 @@ func TestBinopSuccess(t *testing.T) {
 	tests := produceBinopTestCases(
 		AND_TEXT,
 		AND_SYMB,
+		NAND_TEXT,
+		NAND_SYMB,
+		OR_TEXT,
+		OR_SYMB,
+		NOR_TEXT,
+		NOR_SYMB,
+
+		XNOR_TEXT,
+		IFF_TEXT,
+		XNOR_SYMB,
+		XOR_TEXT,
+		XOR_SYMB,
+
+		IMPLIES_TEXT,
+		IMPLIES_SYMB,
+		IMPLIED_BY_TEXT,
+		IMPLIED_BY_SYMB,
+
+		INHIBITS_TEXT,
+		INHIBITS_SYMB,
+		INHIBITED_BY_TEXT,
+		INHIBITED_BY_SYMB,
+
+		LEFT_TEXT,
+		LEFT_SYMB,
+		RIGHT_TEXT,
+		RIGHT_SYMB,
+
+		NOT_LEFT_TEXT,
+		NOT_LEFT_SYMB,
+		NOT_RIGHT_TEXT,
+		NOT_RIGHT_SYMB,
 	)
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test.input)
