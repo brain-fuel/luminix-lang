@@ -360,8 +360,8 @@ type FailingBinopTestCase struct {
 	expectedErr error
 }
 
-func TestBinopFail(t *testing.T) {
-	tests := []FailingBinopTestCase{
+func produceSingleBinopFailingTestCaseSet() []FailingBinopTestCase {
+	return []FailingBinopTestCase{
 		{
 			input:       "and",
 			expectedErr: errors.New("1:1: unexpected token \"and\" (expected PrimaryExpr)"),
@@ -404,6 +404,9 @@ func TestBinopFail(t *testing.T) {
 			expectedErr: errors.New("1:11: unexpected token \"/\\\\\" (expected <eof>)"),
 		},
 	}
+}
+func TestBinopFail(t *testing.T) {
+	tests := produceSingleBinopFailingTestCaseSet()
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test.input)
 		assert.EqualError(t, err, test.expectedErr.Error())
