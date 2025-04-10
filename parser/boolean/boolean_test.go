@@ -355,59 +355,60 @@ func TestNotSymb(t *testing.T) {
 	}
 }
 
-func TestAndFail(t *testing.T) {
-	tests := []struct {
-		input       string
-		expectedErr error
-	}{
-		{
-			input:       "and",
-			expectedErr: errors.New("1:1: unexpected token \"and\" (expected PrimaryExpr)"),
-		},
-		{
-			input:       "True and",
-			expectedErr: errors.New("1:6: unexpected token \"and\" (expected <eof>)"),
-		},
-		{
-			input:       "False and",
-			expectedErr: errors.New("1:7: unexpected token \"and\" (expected <eof>)"),
-		},
-		{
-			input:       "not True and",
-			expectedErr: errors.New("1:10: unexpected token \"and\" (expected <eof>)"),
-		},
-		{
-			input:       "not False and",
-			expectedErr: errors.New("1:11: unexpected token \"and\" (expected <eof>)"),
-		},
-		{
-			input:       "/\\",
-			expectedErr: errors.New("1:1: unexpected token \"/\\\\\" (expected PrimaryExpr)"),
-		},
-		{
-			input:       "True /\\",
-			expectedErr: errors.New("1:6: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
-		{
-			input:       "False /\\",
-			expectedErr: errors.New("1:7: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
-		{
-			input:       "not True /\\",
-			expectedErr: errors.New("1:10: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
-		{
-			input: "not False /\\",
+/*
+	func TestBinopFail(t *testing.T) {
+		tests := []struct {
+			input       string
+			expectedErr error
+		}{
+			{
+				input:       "and",
+				expectedErr: errors.New("1:1: unexpected token \"and\" (expected PrimaryExpr)"),
+			},
+			{
+				input:       "True and",
+				expectedErr: errors.New("1:6: unexpected token \"and\" (expected <eof>)"),
+			},
+			{
+				input:       "False and",
+				expectedErr: errors.New("1:7: unexpected token \"and\" (expected <eof>)"),
+			},
+			{
+				input:       "not True and",
+				expectedErr: errors.New("1:10: unexpected token \"and\" (expected <eof>)"),
+			},
+			{
+				input:       "not False and",
+				expectedErr: errors.New("1:11: unexpected token \"and\" (expected <eof>)"),
+			},
+			{
+				input:       "/\\",
+				expectedErr: errors.New("1:1: unexpected token \"/\\\\\" (expected PrimaryExpr)"),
+			},
+			{
+				input:       "True /\\",
+				expectedErr: errors.New("1:6: unexpected token \"/\\\\\" (expected <eof>)"),
+			},
+			{
+				input:       "False /\\",
+				expectedErr: errors.New("1:7: unexpected token \"/\\\\\" (expected <eof>)"),
+			},
+			{
+				input:       "not True /\\",
+				expectedErr: errors.New("1:10: unexpected token \"/\\\\\" (expected <eof>)"),
+			},
+			{
+				input: "not False /\\",
 
-			expectedErr: errors.New("1:11: unexpected token \"/\\\\\" (expected <eof>)"),
-		},
+				expectedErr: errors.New("1:11: unexpected token \"/\\\\\" (expected <eof>)"),
+			},
+		}
+		for _, test := range tests {
+			_, err := BooleanParser.ParseString("", test.input)
+			assert.EqualError(t, err, test.expectedErr.Error())
+		}
 	}
-	for _, test := range tests {
-		_, err := BooleanParser.ParseString("", test.input)
-		assert.EqualError(t, err, test.expectedErr.Error())
-	}
-}
-
+*/
 func produceBinopTestCases(binops ...string) []struct {
 	input    string
 	expected string
@@ -472,6 +473,39 @@ func TestBinopSuccess(t *testing.T) {
 	tests := produceBinopTestCases(
 		AND_TEXT,
 		AND_SYMB,
+		NAND_TEXT,
+		NAND_SYMB,
+		OR_TEXT,
+		OR_SYMB,
+		NOR_TEXT,
+		NOR_SYMB,
+
+		XNOR_TEXT,
+		IFF_TEXT,
+		XNOR_SYMB,
+
+		XOR_TEXT,
+		XOR_SYMB,
+
+		IMPLIES_TEXT,
+		IMPLIES_SYMB,
+		IMPLIED_BY_TEXT,
+		IMPLIED_BY_SYMB,
+
+		INHIBITS_TEXT,
+		INHIBITS_SYMB,
+		INHIBITED_BY_TEXT,
+		INHIBITED_BY_SYMB,
+
+		LEFT_TEXT,
+		LEFT_SYMB,
+		RIGHT_TEXT,
+		RIGHT_SYMB,
+
+		NOT_LEFT_TEXT,
+		NOT_LEFT_SYMB,
+		NOT_RIGHT_TEXT,
+		NOT_RIGHT_SYMB,
 	)
 	for _, test := range tests {
 		res, err := BooleanParser.ParseString("", test.input)

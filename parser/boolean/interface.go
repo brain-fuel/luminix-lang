@@ -13,43 +13,6 @@ const (
 	ID       string = "id"
 )
 
-const (
-	NAND_TEXT string = "nand"
-	NAND_SYMB string = "~/\\"
-
-	OR_TEXT  string = "or"
-	OR_SYMB  string = "\\/"
-	NOR_TEXT string = "nor"
-	NOR_SYMB string = "~\\/"
-
-	XNOR_TEXT string = "xnor"
-	IFF_TEXT  string = "iff"
-	XNOR_SYMB string = "<=>"
-
-	XOR_TEXT string = "xor"
-	XOR_SYMB string = "<~>"
-
-	IMPLIES_TEXT    string = "implies"
-	IMPLIES_SYMB    string = "=>"
-	IMPLIED_BY_TEXT string = "is implied by"
-	IMPLIED_BY_SYMB string = "<="
-
-	INHIBITS_TEXT     string = "inhibits"
-	INHIBITS_SYMB     string = "/=>"
-	INHIBITED_BY_TEXT string = "is inhibited by"
-	INHIBITED_BY_SYMB string = "<=/"
-
-	LEFT_TEXT  string = "left"
-	LEFT_SYMB  string = "<s"
-	RIGHT_TEXT string = "right"
-	RIGHT_SYMB string = "s>"
-
-	NOT_LEFT_TEXT  string = "not left"
-	NOT_LEFT_SYMB  string = "</"
-	NOT_RIGHT_TEXT string = "not right"
-	NOT_RIGHT_SYMB string = "/>"
-)
-
 var BoolParser = participle.MustBuild[BoolExpr](
 	participle.Lexer(lexer.MustSimple([]lexer.SimpleRule{
 		{

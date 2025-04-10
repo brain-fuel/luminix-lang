@@ -69,13 +69,79 @@ var (
 )
 
 const (
-	AND_TEXT string = "and"
-	AND_SYMB string = "/\\"
+	AND_TEXT  string = "and"
+	AND_SYMB  string = "/\\"
+	NAND_TEXT string = "nand"
+	NAND_SYMB string = "~/\\"
+	OR_TEXT   string = "or"
+	OR_SYMB   string = "\\/"
+	NOR_TEXT  string = "nor"
+	NOR_SYMB  string = "~\\/"
+
+	XNOR_TEXT string = "xnor"
+	IFF_TEXT  string = "iff"
+	XNOR_SYMB string = "<=>"
+
+	XOR_TEXT string = "xor"
+	XOR_SYMB string = "<~>"
+
+	IMPLIES_TEXT    string = "implies"
+	IMPLIES_SYMB    string = "=>"
+	IMPLIED_BY_TEXT string = "is implied by"
+	IMPLIED_BY_SYMB string = "<="
+
+	INHIBITS_TEXT     string = "inhibits"
+	INHIBITS_SYMB     string = "/=>"
+	INHIBITED_BY_TEXT string = "is inhibited by"
+	INHIBITED_BY_SYMB string = "<=/"
+
+	LEFT_TEXT  string = "left"
+	LEFT_SYMB  string = "<s"
+	RIGHT_TEXT string = "right"
+	RIGHT_SYMB string = "s>"
+
+	NOT_LEFT_TEXT  string = "not left"
+	NOT_LEFT_SYMB  string = "</"
+	NOT_RIGHT_TEXT string = "not right"
+	NOT_RIGHT_SYMB string = "/>"
 )
 
 var (
-	AND_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(AND_TEXT, BothBoundaries)
-	AND_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(AND_SYMB, NoBoundary)
+	AND_TEXT_WB  EscapedAndWBString = NewEscapedAndWBString(AND_TEXT, BothBoundaries)
+	AND_SYMB_WB  EscapedAndWBString = NewEscapedAndWBString(AND_SYMB, NoBoundary)
+	NAND_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(NAND_TEXT, BothBoundaries)
+	NAND_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(NAND_SYMB, NoBoundary)
+	OR_TEXT_WB   EscapedAndWBString = NewEscapedAndWBString(OR_TEXT, BothBoundaries)
+	OR_SYMB_WB   EscapedAndWBString = NewEscapedAndWBString(OR_SYMB, NoBoundary)
+	NOR_TEXT_WB  EscapedAndWBString = NewEscapedAndWBString(NOR_TEXT, BothBoundaries)
+	NOR_SYMB_WB  EscapedAndWBString = NewEscapedAndWBString(NOR_SYMB, NoBoundary)
+
+	XNOR_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(XNOR_TEXT, BothBoundaries)
+	IFF_TEXT_WB  EscapedAndWBString = NewEscapedAndWBString(IFF_TEXT, NoBoundary)
+	XNOR_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(XNOR_SYMB, BothBoundaries)
+
+	XOR_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(XOR_TEXT, BothBoundaries)
+	XOR_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(XOR_SYMB, NoBoundary)
+
+	IMPLIES_TEXT_WB    EscapedAndWBString = NewEscapedAndWBString(IMPLIES_TEXT, BothBoundaries)
+	IMPLIES_SYMB_WB    EscapedAndWBString = NewEscapedAndWBString(IMPLIES_SYMB, NoBoundary)
+	IMPLIED_BY_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(IMPLIED_BY_TEXT, BothBoundaries)
+	IMPLIED_BY_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(IMPLIED_BY_SYMB, NoBoundary)
+
+	INHIBITS_TEXT_WB     EscapedAndWBString = NewEscapedAndWBString(INHIBITS_TEXT, BothBoundaries)
+	INHIBITS_SYMB_WB     EscapedAndWBString = NewEscapedAndWBString(INHIBITS_SYMB, NoBoundary)
+	INHIBITED_BY_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(INHIBITED_BY_TEXT, BothBoundaries)
+	INHIBITED_BY_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(INHIBITED_BY_SYMB, NoBoundary)
+
+	LEFT_TEXT_WB  EscapedAndWBString = NewEscapedAndWBString(LEFT_TEXT, BothBoundaries)
+	LEFT_SYMB_WB  EscapedAndWBString = NewEscapedAndWBString(LEFT_SYMB, NoBoundary)
+	RIGHT_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(RIGHT_TEXT, BothBoundaries)
+	RIGHT_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(RIGHT_SYMB, NoBoundary)
+
+	NOT_LEFT_TEXT_WB  EscapedAndWBString = NewEscapedAndWBString(NOT_LEFT_TEXT, BothBoundaries)
+	NOT_LEFT_SYMB_WB  EscapedAndWBString = NewEscapedAndWBString(NOT_LEFT_SYMB, NoBoundary)
+	NOT_RIGHT_TEXT_WB EscapedAndWBString = NewEscapedAndWBString(NOT_RIGHT_TEXT, BothBoundaries)
+	NOT_RIGHT_SYMB_WB EscapedAndWBString = NewEscapedAndWBString(NOT_RIGHT_SYMB, NoBoundary)
 )
 
 const (
@@ -144,6 +210,39 @@ var tokenDefinitions = []TokenDef{
 		OneOf: []string{
 			AND_TEXT_WB.String(),
 			AND_SYMB_WB.String(),
+			NAND_TEXT_WB.String(),
+			NAND_SYMB_WB.String(),
+			OR_TEXT_WB.String(),
+			OR_SYMB_WB.String(),
+			NOR_TEXT_WB.String(),
+			NOR_SYMB_WB.String(),
+
+			XNOR_TEXT_WB.String(),
+			IFF_TEXT_WB.String(),
+			XNOR_SYMB_WB.String(),
+
+			XOR_TEXT_WB.String(),
+			XOR_SYMB_WB.String(),
+
+			IMPLIES_TEXT_WB.String(),
+			IMPLIES_SYMB_WB.String(),
+			IMPLIED_BY_TEXT_WB.String(),
+			IMPLIED_BY_SYMB_WB.String(),
+
+			INHIBITS_TEXT_WB.String(),
+			INHIBITS_SYMB_WB.String(),
+			INHIBITED_BY_TEXT_WB.String(),
+			INHIBITED_BY_SYMB_WB.String(),
+
+			LEFT_TEXT_WB.String(),
+			LEFT_SYMB_WB.String(),
+			RIGHT_TEXT_WB.String(),
+			RIGHT_SYMB_WB.String(),
+
+			NOT_LEFT_TEXT_WB.String(),
+			NOT_LEFT_SYMB_WB.String(),
+			NOT_RIGHT_TEXT_WB.String(),
+			NOT_RIGHT_SYMB_WB.String(),
 		},
 	},
 	{
