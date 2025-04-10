@@ -360,6 +360,13 @@ type FailingBinopTestCase struct {
 	expectedErr error
 }
 
+func produceBinopFailingTestCases(binops ...string) []FailingBinopTestCase {
+	testCases := []FailingBinopTestCase{}
+	newTestCases := produceSingleBinopFailingTestCaseSet()
+	testCases = append(testCases, newTestCases...)
+	return testCases
+}
+
 func produceSingleBinopFailingTestCaseSet() []FailingBinopTestCase {
 	return []FailingBinopTestCase{
 		{
@@ -406,7 +413,7 @@ func produceSingleBinopFailingTestCaseSet() []FailingBinopTestCase {
 	}
 }
 func TestBinopFail(t *testing.T) {
-	tests := produceSingleBinopFailingTestCaseSet()
+	tests := produceBinopFailingTestCases()
 	for _, test := range tests {
 		_, err := BooleanParser.ParseString("", test.input)
 		assert.EqualError(t, err, test.expectedErr.Error())
