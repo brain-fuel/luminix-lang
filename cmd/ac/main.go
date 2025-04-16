@@ -313,12 +313,22 @@ func LXEvalPrint(input string, ctx *repl.ReplContext) (string, *repl.ReplContext
 		return fmt.Sprintf("|  Error:\n|  illegal expression\n|  %s\n|  ^", input), ctx
 	}
 
-	result, err := boolean.EvalBoolExpr(parsed)
-	if err != nil {
-		return fmt.Sprintf("|  Error:\n|  %s", err.Error()), ctx
+	parseResult := boolean.EvalBooleanExpr(parsed)
+	if parseResult.Err != nil {
+		return fmt.Sprintf("|  Error:\n|  %s", parseResult.Err.Error()), ctx
+	}
+	payload := parseResult.Payload
+	var printablePayload string
+	switch payload {
+	case true:
+		printablePayload = "True"
+	case false:
+		printablePayload = "False"
+	default:
+		printablePayload = fmt.Sprintf("%s", payload)
 	}
 
-	return fmt.Sprintf("$%d ==> %t", ctx.ExprNum(), result), ctx.BumpExprNum()
+	return fmt.Sprintf("$%d ==> %s", ctx.ExprNum(), printablePayload), ctx.BumpExprNum()
 }
 
 func min(a, b int) int {

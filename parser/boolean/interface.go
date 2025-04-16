@@ -2,9 +2,9 @@ package boolean
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/alecthomas/participle/v2"
-	"github.com/alecthomas/participle/v2/lexer"
 )
 
 const (
@@ -13,107 +13,155 @@ const (
 	ID       string = "id"
 )
 
-var BoolParser = participle.MustBuild[BoolExpr](
-	participle.Lexer(lexer.MustSimple([]lexer.SimpleRule{
-		{
-			Name:    "Keyword",
-			Pattern: `\b(true|false|and|nand|or|nor|not|nullify|truify|id|implies|inhibits|left|right|xnor|iff|xor)\b`,
-		},
-		{Name: "MultiWordOperator", Pattern: `is implied by|is inhibited by|not left|not right`},
-		{Name: "Operator", Pattern: `/\\|~/\\|\\/|~\\/|<=>|<~>|~|=>|<=|/=>|<=/|<s|s>|</|/>`},
-		{Name: "Paren", Pattern: `[()]`},
-		{Name: "Whitespace", Pattern: `\s+`},
-	})),
+var BoolParser = participle.MustBuild[BooleanExpr](
+	participle.Lexer(BooleanLexer),
 	participle.Elide("Whitespace"),
 )
 
-type BoolExpr struct {
-	OptUnOps []string     `@("not" | "~" | "nullify" | "truify" | "id")*`
-	Left     *BoolTerm    `@@`
-	Rest     []*BinOpTerm `@@*`
+type ParseResult struct {
+	Pos     Position
+	Payload bool
+	Err     error
 }
 
-type BinOpTerm struct {
-	BinOp string    `@("and" | "/\\" | "nand" | "~/\\" | "or" | "\\/" | "nor" | "xnor" | "iff" | "<=>" | "xor" | "<~>" | "~\\/" | "implies" | "=>" | "is implied by" | "<=" | "inhibits" | "/=>" | "is inhibited by" | "<=/" | "left" | "<s" | "right" | "s>" | "not left" | "</" | "not right" | "/>")`
-	Right *BoolTerm `@@`
+func errorParseResult(pos Position, msg string) ParseResult {
+	return ParseResult{
+		Pos:     pos,
+		Payload: false,
+		Err:     errors.New(msg),
+	}
 }
 
-type BoolTerm struct {
-	ParExp *BoolExpr `"(" @@ ")"`
-	Value  *string   `| @("true" | "false")`
+func successParseResult(pos Position, payload bool) ParseResult {
+	return ParseResult{
+		Pos:     pos,
+		Payload: payload,
+		Err:     nil,
+	}
 }
 
-func EvalBoolExpr(expr *BoolExpr) (bool, error) {
+func errNotImplemented(pos Position, thing string) ParseResult {
+	return errorParseResult(pos, "TODO: implement evaluation of "+thing)
+}
+
+func errInvalid(pos Position, thing string, invalidThing any) ParseResult {
+	errMsg := fmt.Errorf("invalid %s '%s'", thing, invalidThing).Error()
+	return errorParseResult(pos, errMsg)
+}
+
+func EvalPrimaryExpr(expr *PrimaryExpr) ParseResult {
 	if expr == nil {
-		return false, errors.New("invalid expression: nil")
+		return errInvalid(Position{}, "primary expression", "nil")
 	}
-
-	acc, err := EvalBoolTerm(expr.Left)
-	if err != nil {
-		return false, err
+	if expr.Paren != nil && expr.Lit != "" {
+		return errInvalid(expr.Pos, "primary expression", "both Lit and Paren")
 	}
+	if expr.Paren != nil {
+		return EvalParenExpr(expr.Paren)
+	}
+	switch expr.Lit {
+	case TRUE:
+		return successParseResult(expr.Pos, true)
+	case FALSE:
+		return successParseResult(expr.Pos, false)
+	default:
+		return errInvalid(expr.Pos, "boolean literal", expr.Lit)
+	}
+}
 
-	for idx := len(expr.OptUnOps) - 1; idx >= 0; idx-- {
-		switch expr.OptUnOps[idx] {
-		// case NOT_TEXT, NOT_SYMB:
-		//	acc = !acc
+func EvalParenExpr(expr *ParenExpr) ParseResult {
+	booleanExprRes := EvalBooleanExpr(expr.BooleanExpr)
+	if booleanExprRes.Err != nil {
+		return booleanExprRes
+	}
+	return successParseResult(expr.Pos, booleanExprRes.Payload)
+}
+
+func EvalUnaryExpr(expr *UnaryExpr) ParseResult {
+	if expr == nil {
+		return errInvalid(Position{}, "unary expression", "nil")
+	}
+	exprRes := EvalPrimaryExpr(expr.Expr)
+	if exprRes.Err != nil {
+		return exprRes
+	}
+	acc := exprRes.Payload
+	for idx := len(expr.Ops) - 1; idx >= 0; idx-- {
+		switch expr.Ops[idx].Op {
+		case NOT_TEXT, NOT_SYMB:
+			acc = !acc
 		case FALSE_OP:
 			acc = false
 		case TRUE_OP:
 			acc = true
 		case ID:
 			// No change
+		default:
+			return errInvalid(expr.Pos, "unary operator", expr.Ops[idx].Op)
 		}
 	}
+	return successParseResult(expr.Pos, acc)
+}
 
-	for _, binOp := range expr.Rest {
-		right, err := EvalBoolTerm(binOp.Right)
-		if err != nil {
-			return false, err
+func EvalBooleanExpr(expr *BooleanExpr) ParseResult {
+	if expr == nil {
+		return errInvalid(Position{}, "boolean expression", "nil")
+	}
+	unaryRes := EvalUnaryExpr(expr.Unary)
+	return TransmogrifyUnaryResBasedOnRest(expr.Rest)(unaryRes)
+}
+
+func TransmogrifyUnaryResBasedOnRest(rest *BooleanExprRest) func(ParseResult) ParseResult {
+	if rest == nil {
+		return func(unaryRes ParseResult) ParseResult {
+			return unaryRes
 		}
-
-		switch binOp.BinOp {
+	}
+	exprRes := EvalBooleanExpr(rest.Expr)
+	if exprRes.Err != nil {
+		return func(unaryRes ParseResult) ParseResult {
+			return exprRes
+		}
+	}
+	return func(unaryRes ParseResult) ParseResult {
+		if unaryRes.Err != nil {
+			return unaryRes
+		}
+		left := unaryRes.Payload
+		right := exprRes.Payload
+		var resPayload bool
+		switch rest.Op {
 		case AND_TEXT, AND_SYMB:
-			acc = acc && right
+			resPayload = left && right
 		case NAND_TEXT, NAND_SYMB:
-			acc = !(acc && right)
+			resPayload = !(left && right)
 		case OR_TEXT, OR_SYMB:
-			acc = acc || right
+			resPayload = left || right
 		case NOR_TEXT, NOR_SYMB:
-			acc = !(acc || right)
+			resPayload = !(left || right)
 		case IMPLIES_TEXT, IMPLIES_SYMB:
-			acc = !acc || right
+			resPayload = !left || right
 		case IMPLIED_BY_TEXT, IMPLIED_BY_SYMB:
-			acc = acc || !right
+			resPayload = left || !right
 		case INHIBITS_TEXT, INHIBITS_SYMB:
-			acc = !acc || !right
+			resPayload = !left || !right
 		case INHIBITED_BY_TEXT, INHIBITED_BY_SYMB:
-			acc = !acc || !right
+			resPayload = !left || !right
 		case LEFT_TEXT, LEFT_SYMB:
 			// no change
 		case RIGHT_TEXT, RIGHT_SYMB:
-			acc = right
+			resPayload = right
 		case NOT_LEFT_TEXT, NOT_LEFT_SYMB:
-			acc = !acc
+			resPayload = !left
 		case NOT_RIGHT_TEXT, NOT_RIGHT_SYMB:
-			acc = !right
+			resPayload = !right
 		case XNOR_TEXT, XNOR_SYMB, IFF_TEXT:
-			acc = acc == right
+			resPayload = left == right
 		case XOR_TEXT, XOR_SYMB:
-			acc = acc != right
+			resPayload = left != right
+		default:
+			return errInvalid(exprRes.Pos, "binary operation", rest.Op)
 		}
+		return successParseResult(unaryRes.Pos, resPayload)
 	}
-	return acc, nil
-}
-
-func EvalBoolTerm(term *BoolTerm) (bool, error) {
-	if term == nil {
-		return false, errors.New("invalid term: nil expression")
-	}
-	if term.Value != nil {
-		return *term.Value == "true", nil
-	} else if term.ParExp != nil {
-		return EvalBoolExpr(term.ParExp)
-	}
-	return false, errors.New("invalid term: missing value or subexpression")
 }
