@@ -330,7 +330,7 @@ type File struct {
 	EOF         string   `parser:"EOF"`
 }
 
-var BooleanParser = participle.MustBuild[File](
+var FileParser = participle.MustBuild[File](
 	participle.Lexer(BooleanLexer),
 	participle.Elide("Whitespace"),
 )

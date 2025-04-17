@@ -7,13 +7,7 @@ import (
 	"github.com/alecthomas/participle/v2"
 )
 
-const (
-	FALSE_OP string = "nullify"
-	TRUE_OP  string = "truify"
-	ID       string = "id"
-)
-
-var BoolParser = participle.MustBuild[BooleanExpr](
+var BooleanExprParser = participle.MustBuild[BooleanExpr](
 	participle.Lexer(BooleanLexer),
 	participle.Elide("Whitespace"),
 )
@@ -90,11 +84,11 @@ func EvalUnaryExpr(expr *UnaryExpr) ParseResult {
 		switch expr.Ops[idx].Op {
 		case NOT_TEXT, NOT_SYMB:
 			acc = !acc
-		case FALSE_OP:
+		case NULLIFY_TEXT:
 			acc = false
-		case TRUE_OP:
+		case TRUIFY_TEXT:
 			acc = true
-		case ID:
+		case ID_TEXT:
 			// No change
 		default:
 			return errInvalid(expr.Pos, "unary operator", expr.Ops[idx].Op)

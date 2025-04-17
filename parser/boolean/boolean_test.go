@@ -18,7 +18,7 @@ func TestTrueFail(t *testing.T) {
 		"ture",
 	}
 	for _, test := range tests {
-		_, err := BooleanParser.ParseString("", test)
+		_, err := FileParser.ParseString("", test)
 		errorStr := fmt.Sprintf(
 			"1:1: unexpected token \"%s\" (expected PrimaryExpr)",
 			strings.Fields(test)[0],
@@ -31,7 +31,7 @@ func TestTrueFail(t *testing.T) {
 func TestTrue(t *testing.T) {
 	input := "True"
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
-	res, err := BooleanParser.ParseString("", input)
+	res, err := FileParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.Equal(t, TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
 	assert.Equal(t, expectedPosition, res.Expressions[0].Bool.Unary.Expr.Pos)
@@ -46,7 +46,7 @@ func TestTrueFailAfterTrueSucceed(t *testing.T) {
 	}
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	for _, test := range tests {
-		res, err := BooleanParser.ParseString("", test)
+		res, err := FileParser.ParseString("", test)
 		assert.Equal(t, TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
 		assert.Equal(t, expectedPosition, res.Expressions[0].Bool.Unary.Expr.Pos)
 
@@ -68,7 +68,7 @@ func TestTrueFailAfterTrueSucceedAndNewLine(t *testing.T) {
 	}
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	for _, test := range tests {
-		res, err := BooleanParser.ParseString("", test)
+		res, err := FileParser.ParseString("", test)
 		assert.Equal(t, TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
 		assert.Equal(t, expectedPosition, res.Expressions[0].Bool.Unary.Expr.Pos)
 
@@ -90,7 +90,7 @@ func TestFalseFail(t *testing.T) {
 		"flase",
 	}
 	for _, test := range tests {
-		_, err := BooleanParser.ParseString("", test)
+		_, err := FileParser.ParseString("", test)
 		errorStr := fmt.Sprintf(
 			"1:1: unexpected token \"%s\" (expected PrimaryExpr)",
 			strings.Fields(test)[0],
@@ -102,7 +102,7 @@ func TestFalseFail(t *testing.T) {
 
 func TestFalse(t *testing.T) {
 	input := "False"
-	res, err := BooleanParser.ParseString("", input)
+	res, err := FileParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.Equal(t, FALSE, res.Expressions[0].Bool.Unary.Expr.Lit)
 }
@@ -116,7 +116,7 @@ func TestFalseFailAfterFalseSucceed(t *testing.T) {
 		"False flase",
 	}
 	for _, test := range tests {
-		_, err := BooleanParser.ParseString("", test)
+		_, err := FileParser.ParseString("", test)
 		errorStr := fmt.Sprintf(
 			"1:7: unexpected token \"%s\" (expected <eof>)",
 			strings.Fields(test)[1],
@@ -135,7 +135,7 @@ func TestFalseFailAfterFalseSucceedAndNewLine(t *testing.T) {
 		"False\nflase",
 	}
 	for _, test := range tests {
-		_, err := BooleanParser.ParseString("", test)
+		_, err := FileParser.ParseString("", test)
 		errorStr := fmt.Sprintf(
 			"2:1: unexpected token \"%s\" (expected <eof>)",
 			strings.Fields(test)[1],
@@ -164,7 +164,7 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		res, err := BooleanParser.ParseString("", test.Val)
+		res, err := FileParser.ParseString("", test.Val)
 		assert.Equal(
 			t,
 			TRUE,
@@ -183,7 +183,7 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 
 func TestParens(t *testing.T) {
 	input := "(True)"
-	res, err := BooleanParser.ParseString("", input)
+	res, err := FileParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 	assert.NotNil(t, res.Expressions[0].Bool.Unary.Expr.Paren)
@@ -196,7 +196,7 @@ func TestParens(t *testing.T) {
 
 func TestDoubleParens(t *testing.T) {
 	input := "((True))"
-	res, err := BooleanParser.ParseString("", input)
+	res, err := FileParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 	assert.NotNil(t, res.Expressions[0].Bool.Unary.Expr.Paren)
@@ -252,7 +252,7 @@ func TestSingleParenSetPermutations(t *testing.T) {
 		"(True)  ",
 	}
 	for _, test := range tests {
-		res, err := BooleanParser.ParseString("", test)
+		res, err := FileParser.ParseString("", test)
 		assert.NoError(t, err)
 		assert.Equal(
 			t,
@@ -263,7 +263,7 @@ func TestSingleParenSetPermutations(t *testing.T) {
 }
 
 func ActAndAssertUnaryOpSuccess(t *testing.T, input string, expected string) {
-	res, err := BooleanParser.ParseString("", input)
+	res, err := FileParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 	assert.Equal(t, expected, res.Expressions[0].Bool.Unary.Ops[0].Op)
@@ -298,7 +298,7 @@ func TestUnaryOps(t *testing.T) {
 }
 
 func ActAndAssertUnaryOpFail(t *testing.T, input string) {
-	_, err := BooleanParser.ParseString("", input)
+	_, err := FileParser.ParseString("", input)
 	errorStr := fmt.Sprintf("1:%d: unexpected token \"<EOF>\" (expected PrimaryExpr)", len(input)+1)
 	expectedErr := errors.New(errorStr)
 	assert.EqualError(t, err, expectedErr.Error())
@@ -318,7 +318,7 @@ func TestUnaryOpsFail(t *testing.T) {
 
 func TestNotNot(t *testing.T) {
 	input := "not not True"
-	res, err := BooleanParser.ParseString("", input)
+	res, err := FileParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 	assert.Equal(t, NOT_TEXT, res.Expressions[0].Bool.Unary.Ops[0].Op)
@@ -328,7 +328,7 @@ func TestNotNot(t *testing.T) {
 
 func TestNotNotFail(t *testing.T) {
 	input := "notnot true"
-	_, err := BooleanParser.ParseString("", input)
+	_, err := FileParser.ParseString("", input)
 	assert.EqualError(t, err, "1:1: unexpected token \"notnot\" (expected PrimaryExpr)")
 }
 
@@ -341,7 +341,7 @@ func TestNotSymb(t *testing.T) {
 		" ~  True",
 	}
 	for _, test := range tests {
-		res, err := BooleanParser.ParseString("", test)
+		res, err := FileParser.ParseString("", test)
 		assert.NoError(t, err)
 		assert.Equal(
 			t,
@@ -398,6 +398,7 @@ func produceSingleBinopFailingTestCaseSet(binop string) []FailingBinopTestCase {
 		},
 	}
 }
+
 func TestBinopFail(t *testing.T) {
 	tests := produceBinopFailingTestCases(
 		AND_TEXT,
@@ -436,7 +437,7 @@ func TestBinopFail(t *testing.T) {
 		NOT_RIGHT_SYMB,
 	)
 	for _, test := range tests {
-		_, err := BooleanParser.ParseString("", test.input)
+		_, err := FileParser.ParseString("", test.input)
 		assert.EqualError(t, err, test.expectedErr.Error())
 	}
 }
@@ -533,7 +534,7 @@ func TestBinopSuccess(t *testing.T) {
 		NOT_RIGHT_SYMB,
 	)
 	for _, test := range tests {
-		res, err := BooleanParser.ParseString("", test.input)
+		res, err := FileParser.ParseString("", test.input)
 		actual := res.Expressions[0].Bool.Rest.Op
 		assert.NoError(t, err)
 		assert.Equal(t, actual, test.expected)
