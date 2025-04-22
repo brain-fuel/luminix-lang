@@ -4,11 +4,12 @@ import (
 	"errors"
 	"fmt"
 
+	"acornlang.dev/lang/lexer"
 	"github.com/alecthomas/participle/v2"
 )
 
 var BooleanExprParser = participle.MustBuild[BooleanExpr](
-	participle.Lexer(BooleanLexer),
+	participle.Lexer(lexer.BooleanLexer),
 	participle.Elide("Whitespace"),
 )
 
@@ -54,9 +55,9 @@ func EvalPrimaryExpr(expr *PrimaryExpr) ParseResult {
 		return EvalParenExpr(expr.Paren)
 	}
 	switch expr.Lit {
-	case TRUE:
+	case lexer.TRUE:
 		return successParseResult(expr.Pos, true)
-	case FALSE:
+	case lexer.FALSE:
 		return successParseResult(expr.Pos, false)
 	default:
 		return errInvalid(expr.Pos, "boolean literal", expr.Lit)
@@ -82,13 +83,13 @@ func EvalUnaryExpr(expr *UnaryExpr) ParseResult {
 	acc := exprRes.Payload
 	for idx := len(expr.Ops) - 1; idx >= 0; idx-- {
 		switch expr.Ops[idx].Op {
-		case NOT_TEXT, NOT_SYMB:
+		case lexer.NOT_TEXT, lexer.NOT_SYMB:
 			acc = !acc
-		case NULLIFY_TEXT:
+		case lexer.NULLIFY_TEXT:
 			acc = false
-		case TRUIFY_TEXT:
+		case lexer.TRUIFY_TEXT:
 			acc = true
-		case ID_TEXT:
+		case lexer.ID_TEXT:
 			// No change
 		default:
 			return errInvalid(expr.Pos, "unary operator", expr.Ops[idx].Op)
@@ -125,33 +126,33 @@ func TransmogrifyUnaryResBasedOnRest(rest *BooleanExprRest) func(ParseResult) Pa
 		right := exprRes.Payload
 		var resPayload bool
 		switch rest.Op {
-		case AND_TEXT, AND_SYMB:
+		case lexer.AND_TEXT, lexer.AND_SYMB:
 			resPayload = left && right
-		case NAND_TEXT, NAND_SYMB:
+		case lexer.NAND_TEXT, lexer.NAND_SYMB:
 			resPayload = !(left && right)
-		case OR_TEXT, OR_SYMB:
+		case lexer.OR_TEXT, lexer.OR_SYMB:
 			resPayload = left || right
-		case NOR_TEXT, NOR_SYMB:
+		case lexer.NOR_TEXT, lexer.NOR_SYMB:
 			resPayload = !(left || right)
-		case IMPLIES_TEXT, IMPLIES_SYMB:
+		case lexer.IMPLIES_TEXT, lexer.IMPLIES_SYMB:
 			resPayload = !left || right
-		case IMPLIED_BY_TEXT, IMPLIED_BY_SYMB:
+		case lexer.IMPLIED_BY_TEXT, lexer.IMPLIED_BY_SYMB:
 			resPayload = left || !right
-		case INHIBITS_TEXT, INHIBITS_SYMB:
+		case lexer.INHIBITS_TEXT, lexer.INHIBITS_SYMB:
 			resPayload = !left || !right
-		case INHIBITED_BY_TEXT, INHIBITED_BY_SYMB:
+		case lexer.INHIBITED_BY_TEXT, lexer.INHIBITED_BY_SYMB:
 			resPayload = !left || !right
-		case LEFT_TEXT, LEFT_SYMB:
+		case lexer.LEFT_TEXT, lexer.LEFT_SYMB:
 			// no change
-		case RIGHT_TEXT, RIGHT_SYMB:
+		case lexer.RIGHT_TEXT, lexer.RIGHT_SYMB:
 			resPayload = right
-		case NOT_LEFT_TEXT, NOT_LEFT_SYMB:
+		case lexer.NOT_LEFT_TEXT, lexer.NOT_LEFT_SYMB:
 			resPayload = !left
-		case NOT_RIGHT_TEXT, NOT_RIGHT_SYMB:
+		case lexer.NOT_RIGHT_TEXT, lexer.NOT_RIGHT_SYMB:
 			resPayload = !right
-		case XNOR_TEXT, XNOR_SYMB, IFF_TEXT:
+		case lexer.XNOR_TEXT, lexer.XNOR_SYMB, lexer.IFF_TEXT:
 			resPayload = left == right
-		case XOR_TEXT, XOR_SYMB:
+		case lexer.XOR_TEXT, lexer.XOR_SYMB:
 			resPayload = left != right
 		default:
 			return errInvalid(exprRes.Pos, "binary operation", rest.Op)
