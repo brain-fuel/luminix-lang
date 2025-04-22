@@ -1,6 +1,8 @@
 module acornlang.dev/lang
 
-go 1.23.5
+go 1.24.2
+
+replace acornlang.dev/lang/lexer => ./lexer
 
 replace acornlang.dev/lang/parser => ./parser
 
@@ -15,6 +17,7 @@ require (
 )
 
 require (
+	acornlang.dev/lang/lexer v0.0.0-00010101000000-000000000000 // indirect
 	github.com/alecthomas/participle/v2 v2.1.4 // indirect
 	github.com/gdamore/encoding v1.0.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect

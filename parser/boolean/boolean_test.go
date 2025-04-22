@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"acornlang.dev/lang/lexer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,7 +34,7 @@ func TestTrue(t *testing.T) {
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	res, err := FileParser.ParseString("", input)
 	assert.NoError(t, err)
-	assert.Equal(t, TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
+	assert.Equal(t, lexer.TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
 	assert.Equal(t, expectedPosition, res.Expressions[0].Bool.Unary.Expr.Pos)
 }
 
@@ -47,7 +48,7 @@ func TestTrueFailAfterTrueSucceed(t *testing.T) {
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	for _, test := range tests {
 		res, err := FileParser.ParseString("", test)
-		assert.Equal(t, TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
+		assert.Equal(t, lexer.TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
 		assert.Equal(t, expectedPosition, res.Expressions[0].Bool.Unary.Expr.Pos)
 
 		errorStr := fmt.Sprintf(
@@ -69,7 +70,7 @@ func TestTrueFailAfterTrueSucceedAndNewLine(t *testing.T) {
 	expectedPosition := Position(Position{Filename: "", Offset: 0, Line: 1, Column: 1})
 	for _, test := range tests {
 		res, err := FileParser.ParseString("", test)
-		assert.Equal(t, TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
+		assert.Equal(t, lexer.TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
 		assert.Equal(t, expectedPosition, res.Expressions[0].Bool.Unary.Expr.Pos)
 
 		errorStr := fmt.Sprintf(
@@ -104,7 +105,7 @@ func TestFalse(t *testing.T) {
 	input := "False"
 	res, err := FileParser.ParseString("", input)
 	assert.NoError(t, err)
-	assert.Equal(t, FALSE, res.Expressions[0].Bool.Unary.Expr.Lit)
+	assert.Equal(t, lexer.FALSE, res.Expressions[0].Bool.Unary.Expr.Lit)
 }
 
 func TestFalseFailAfterFalseSucceed(t *testing.T) {
@@ -167,7 +168,7 @@ func TestParensFailWithSingleTrue(t *testing.T) {
 		res, err := FileParser.ParseString("", test.Val)
 		assert.Equal(
 			t,
-			TRUE,
+			lexer.TRUE,
 			res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit,
 		)
 		assert.Equal(
@@ -189,7 +190,7 @@ func TestParens(t *testing.T) {
 	assert.NotNil(t, res.Expressions[0].Bool.Unary.Expr.Paren)
 	assert.Equal(
 		t,
-		TRUE,
+		lexer.TRUE,
 		res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit,
 	)
 }
@@ -216,7 +217,7 @@ func TestDoubleParens(t *testing.T) {
 	)
 	assert.Equal(
 		t,
-		TRUE,
+		lexer.TRUE,
 		res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit,
 	)
 }
@@ -256,7 +257,7 @@ func TestSingleParenSetPermutations(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(
 			t,
-			TRUE,
+			lexer.TRUE,
 			res.Expressions[0].Bool.Unary.Expr.Paren.BooleanExpr.Unary.Expr.Lit,
 		)
 	}
@@ -267,7 +268,7 @@ func ActAndAssertUnaryOpSuccess(t *testing.T, input string, expected string) {
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
 	assert.Equal(t, expected, res.Expressions[0].Bool.Unary.Ops[0].Op)
-	assert.Equal(t, TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
+	assert.Equal(t, lexer.TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
 }
 
 func TestUnaryOps(t *testing.T) {
@@ -277,19 +278,19 @@ func TestUnaryOps(t *testing.T) {
 	}{
 		{
 			"not True",
-			NOT_TEXT,
+			lexer.NOT_TEXT,
 		},
 		{
 			"nullify True",
-			NULLIFY_TEXT,
+			lexer.NULLIFY_TEXT,
 		},
 		{
 			"truify True",
-			TRUIFY_TEXT,
+			lexer.TRUIFY_TEXT,
 		},
 		{
 			"id True",
-			ID_TEXT,
+			lexer.ID_TEXT,
 		},
 	}
 	for _, test := range testCases {
@@ -321,9 +322,9 @@ func TestNotNot(t *testing.T) {
 	res, err := FileParser.ParseString("", input)
 	assert.NoError(t, err)
 	assert.NotNil(t, res)
-	assert.Equal(t, NOT_TEXT, res.Expressions[0].Bool.Unary.Ops[0].Op)
-	assert.Equal(t, NOT_TEXT, res.Expressions[0].Bool.Unary.Ops[1].Op)
-	assert.Equal(t, TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
+	assert.Equal(t, lexer.NOT_TEXT, res.Expressions[0].Bool.Unary.Ops[0].Op)
+	assert.Equal(t, lexer.NOT_TEXT, res.Expressions[0].Bool.Unary.Ops[1].Op)
+	assert.Equal(t, lexer.TRUE, res.Expressions[0].Bool.Unary.Expr.Lit)
 }
 
 func TestNotNotFail(t *testing.T) {
@@ -345,12 +346,12 @@ func TestNotSymb(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(
 			t,
-			NOT_SYMB,
+			lexer.NOT_SYMB,
 			res.Expressions[0].Bool.Unary.Ops[0].Op,
 		)
 		assert.Equal(
 			t,
-			TRUE,
+			lexer.TRUE,
 			res.Expressions[0].Bool.Unary.Expr.Lit,
 		)
 	}
@@ -401,40 +402,40 @@ func produceSingleBinopFailingTestCaseSet(binop string) []FailingBinopTestCase {
 
 func TestBinopFail(t *testing.T) {
 	tests := produceBinopFailingTestCases(
-		AND_TEXT,
-		AND_SYMB,
-		NAND_TEXT,
-		NAND_SYMB,
-		OR_TEXT,
-		OR_SYMB,
-		NOR_TEXT,
-		NOR_SYMB,
+		lexer.AND_TEXT,
+		lexer.AND_SYMB,
+		lexer.NAND_TEXT,
+		lexer.NAND_SYMB,
+		lexer.OR_TEXT,
+		lexer.OR_SYMB,
+		lexer.NOR_TEXT,
+		lexer.NOR_SYMB,
 
-		XNOR_TEXT,
-		IFF_TEXT,
-		XNOR_SYMB,
-		XOR_TEXT,
-		XOR_SYMB,
+		lexer.XNOR_TEXT,
+		lexer.IFF_TEXT,
+		lexer.XNOR_SYMB,
+		lexer.XOR_TEXT,
+		lexer.XOR_SYMB,
 
-		IMPLIES_TEXT,
-		IMPLIES_SYMB,
-		IMPLIED_BY_TEXT,
-		IMPLIED_BY_SYMB,
+		lexer.IMPLIES_TEXT,
+		lexer.IMPLIES_SYMB,
+		lexer.IMPLIED_BY_TEXT,
+		lexer.IMPLIED_BY_SYMB,
 
-		INHIBITS_TEXT,
-		INHIBITS_SYMB,
-		INHIBITED_BY_TEXT,
-		INHIBITED_BY_SYMB,
+		lexer.INHIBITS_TEXT,
+		lexer.INHIBITS_SYMB,
+		lexer.INHIBITED_BY_TEXT,
+		lexer.INHIBITED_BY_SYMB,
 
-		LEFT_TEXT,
-		LEFT_SYMB,
-		RIGHT_TEXT,
-		RIGHT_SYMB,
+		lexer.LEFT_TEXT,
+		lexer.LEFT_SYMB,
+		lexer.RIGHT_TEXT,
+		lexer.RIGHT_SYMB,
 
-		NOT_LEFT_TEXT,
-		NOT_LEFT_SYMB,
-		NOT_RIGHT_TEXT,
-		NOT_RIGHT_SYMB,
+		lexer.NOT_LEFT_TEXT,
+		lexer.NOT_LEFT_SYMB,
+		lexer.NOT_RIGHT_TEXT,
+		lexer.NOT_RIGHT_SYMB,
 	)
 	for _, test := range tests {
 		_, err := FileParser.ParseString("", test.input)
@@ -498,40 +499,40 @@ func produceSingleBinopTestCaseSet(binop string) []SuccessfulBinopTestCase {
 
 func TestBinopSuccess(t *testing.T) {
 	tests := produceBinopTestCases(
-		AND_TEXT,
-		AND_SYMB,
-		NAND_TEXT,
-		NAND_SYMB,
-		OR_TEXT,
-		OR_SYMB,
-		NOR_TEXT,
-		NOR_SYMB,
+		lexer.AND_TEXT,
+		lexer.AND_SYMB,
+		lexer.NAND_TEXT,
+		lexer.NAND_SYMB,
+		lexer.OR_TEXT,
+		lexer.OR_SYMB,
+		lexer.NOR_TEXT,
+		lexer.NOR_SYMB,
 
-		XNOR_TEXT,
-		IFF_TEXT,
-		XNOR_SYMB,
-		XOR_TEXT,
-		XOR_SYMB,
+		lexer.XNOR_TEXT,
+		lexer.IFF_TEXT,
+		lexer.XNOR_SYMB,
+		lexer.XOR_TEXT,
+		lexer.XOR_SYMB,
 
-		IMPLIES_TEXT,
-		IMPLIES_SYMB,
-		IMPLIED_BY_TEXT,
-		IMPLIED_BY_SYMB,
+		lexer.IMPLIES_TEXT,
+		lexer.IMPLIES_SYMB,
+		lexer.IMPLIED_BY_TEXT,
+		lexer.IMPLIED_BY_SYMB,
 
-		INHIBITS_TEXT,
-		INHIBITS_SYMB,
-		INHIBITED_BY_TEXT,
-		INHIBITED_BY_SYMB,
+		lexer.INHIBITS_TEXT,
+		lexer.INHIBITS_SYMB,
+		lexer.INHIBITED_BY_TEXT,
+		lexer.INHIBITED_BY_SYMB,
 
-		LEFT_TEXT,
-		LEFT_SYMB,
-		RIGHT_TEXT,
-		RIGHT_SYMB,
+		lexer.LEFT_TEXT,
+		lexer.LEFT_SYMB,
+		lexer.RIGHT_TEXT,
+		lexer.RIGHT_SYMB,
 
-		NOT_LEFT_TEXT,
-		NOT_LEFT_SYMB,
-		NOT_RIGHT_TEXT,
-		NOT_RIGHT_SYMB,
+		lexer.NOT_LEFT_TEXT,
+		lexer.NOT_LEFT_SYMB,
+		lexer.NOT_RIGHT_TEXT,
+		lexer.NOT_RIGHT_SYMB,
 	)
 	for _, test := range tests {
 		res, err := FileParser.ParseString("", test.input)
