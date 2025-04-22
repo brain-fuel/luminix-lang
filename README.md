@@ -1,5 +1,11 @@
 # Acorn Language
 
+## Testable directories
+
+```
+go test -count=1 ./parser
+```
+
 ## Rules of Engagement
 
 - Engage sincerely
