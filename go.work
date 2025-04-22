@@ -6,4 +6,5 @@ use (
 	./parser
 	./parser/boolean
 	./repl
+  ./types
 )
