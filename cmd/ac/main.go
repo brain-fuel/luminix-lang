@@ -308,12 +308,12 @@ func replaceToEnglish(input string) string {
 }
 
 func LXEvalPrint(input string, ctx *repl.ReplContext) (string, *repl.ReplContext) {
-	parsed, err := boolean.BoolParser.ParseString("", input)
+	parsed, err := boolean.ExprParser.ParseString("", input)
 	if err != nil {
 		return fmt.Sprintf("|  Error:\n|  illegal expression\n|  %s\n|  ^", input), ctx
 	}
 
-	parseResult := boolean.EvalBooleanExpr(parsed)
+	parseResult := boolean.EvalExpr(parsed)
 	if parseResult.Err != nil {
 		return fmt.Sprintf("|  Error:\n|  %s", parseResult.Err.Error()), ctx
 	}
@@ -325,7 +325,7 @@ func LXEvalPrint(input string, ctx *repl.ReplContext) (string, *repl.ReplContext
 	case false:
 		printablePayload = "False"
 	default:
-		printablePayload = fmt.Sprintf("%s", payload)
+		printablePayload = fmt.Sprintf("%t", payload)
 	}
 
 	return fmt.Sprintf("$%d ==> %s", ctx.ExprNum(), printablePayload), ctx.BumpExprNum()

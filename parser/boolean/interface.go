@@ -6,49 +6,16 @@ import (
 
 	"acornlang.dev/lang/lexer"
 	"acornlang.dev/lang/types"
+	"acornlang.dev/lang/types/ast/boolean"
 	"github.com/alecthomas/participle/v2"
 )
 
 // Regd. Parsing
 
-type Expr struct {
-	Pos   types.Position `parser:"", json:"pos"`
-	Unary *UnaryExpr     `parser:"@@"`
-	Rest  *ExprRest      `parser:"(@@)?"`
-}
-
-var ExprParser = participle.MustBuild[Expr](
+var ExprParser = participle.MustBuild[boolean.Expr](
 	participle.Lexer(lexer.BooleanLexer),
 	participle.Elide("Whitespace"),
 )
-
-type UnaryExpr struct {
-	Pos  types.Position `parser:"", json:"pos"`
-	Ops  []UnaryOp      `parser:"@@*"`
-	Expr *PrimaryExpr   `parser:"@@"`
-}
-
-type UnaryOp struct {
-	Pos types.Position `parser:"", json:"pos"`
-	Op  string         `parser:"@UnaryOpString"`
-}
-
-type ExprRest struct {
-	Pos  types.Position `parser:"", json:"pos"`
-	Op   string         `parser:"@BinaryOpString"`
-	Expr *Expr          `parser:"@@"`
-}
-
-type PrimaryExpr struct {
-	Pos   types.Position `parser:"", json:"pos"`
-	Lit   string         `parser:"@LitString"`
-	Paren *ParenExpr     `parser:"|@@"`
-}
-
-type ParenExpr struct {
-	Pos  types.Position `parser:"", json:"pos"`
-	Expr *Expr          `parser:"'(' @@ ')'"`
-}
 
 // Regd. Evaluation
 
@@ -83,7 +50,7 @@ func errInvalid(pos types.Position, thing string, invalidThing any) EvalResult {
 	return errorEvalResult(pos, errMsg)
 }
 
-func EvalPrimaryExpr(expr *PrimaryExpr) EvalResult {
+func EvalPrimaryExpr(expr *boolean.PrimaryExpr) EvalResult {
 	if expr == nil {
 		return errInvalid(types.Position{}, "primary expression", "nil")
 	}
@@ -103,7 +70,7 @@ func EvalPrimaryExpr(expr *PrimaryExpr) EvalResult {
 	}
 }
 
-func EvalParenExpr(expr *ParenExpr) EvalResult {
+func EvalParenExpr(expr *boolean.ParenExpr) EvalResult {
 	booleanExprRes := EvalExpr(expr.Expr)
 	if booleanExprRes.Err != nil {
 		return booleanExprRes
@@ -111,7 +78,7 @@ func EvalParenExpr(expr *ParenExpr) EvalResult {
 	return successEvalResult(expr.Pos, booleanExprRes.Payload)
 }
 
-func EvalUnaryExpr(expr *UnaryExpr) EvalResult {
+func EvalUnaryExpr(expr *boolean.UnaryExpr) EvalResult {
 	if expr == nil {
 		return errInvalid(types.Position{}, "unary expression", "nil")
 	}
@@ -137,7 +104,7 @@ func EvalUnaryExpr(expr *UnaryExpr) EvalResult {
 	return successEvalResult(expr.Pos, acc)
 }
 
-func EvalExpr(expr *Expr) EvalResult {
+func EvalExpr(expr *boolean.Expr) EvalResult {
 	if expr == nil {
 		return errInvalid(types.Position{}, "boolean expression", "nil")
 	}
@@ -145,7 +112,7 @@ func EvalExpr(expr *Expr) EvalResult {
 	return TransmogrifyUnaryResBasedOnRest(expr.Rest)(unaryRes)
 }
 
-func TransmogrifyUnaryResBasedOnRest(rest *ExprRest) func(EvalResult) EvalResult {
+func TransmogrifyUnaryResBasedOnRest(rest *boolean.ExprRest) func(EvalResult) EvalResult {
 	if rest == nil {
 		return func(unaryRes EvalResult) EvalResult {
 			return unaryRes
