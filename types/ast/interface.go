@@ -6,15 +6,22 @@ import (
 )
 
 type File struct {
-	Pos         types.Position `parser:"", json:"pos"`
-	Expressions []Expr         `parser:"@@"`
-	EOF         string         `parser:"EOF"`
+	Pos        types.Position       `parser:"", json:"pos"`
+	Head       *Expr                `parser:"@@"`
+	Tail       []TerminatorThenExpr `parser:"(@@)*"`
+	Terminator *ExprTerminator      `parser:"(@@)?"`
+	EOF        string               `parser:"EOF"`
 }
 
 type Expr struct {
+	Pos  types.Position `parser:"", json:"pos"`
+	Bool *boolean.Expr  `parser:"@@"`
+}
+
+type TerminatorThenExpr struct {
 	Pos            types.Position  `parser:"", json:"pos"`
-	Bool           *boolean.Expr   `parser:"@@"`
-	ExprTerminator *ExprTerminator `parser:"(@@)?"`
+	ExprTerminator *ExprTerminator `parser:"@@"`
+	Expr           *Expr           `parser:"@@"`
 }
 
 type ExprTerminator struct {
