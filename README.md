@@ -8,7 +8,7 @@ source testall.sh
 ```
 Powershell
 ```ps1
-source testall.ps1
+testall.ps1
 ```
 
 ## Rules of Engagement
