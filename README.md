@@ -1,9 +1,14 @@
 # Acorn Language
 
-## Testable directories
+## Testing
 
+Bash
+```bash
+source testall.sh
 ```
-go test -count=1 ./parser
+Powershell
+```ps1
+source testall.ps1
 ```
 
 ## Rules of Engagement
@@ -12,32 +17,18 @@ go test -count=1 ./parser
 - Think deeply
 - Build something worth building
 
-## Ideas
-
-- propositional and predicate logic
-- `if P then Q -> P => Q`; `P => Q -> if P then Q`... make a facility to interchange one of these for another. Perhaps also if we have something like `assert P => Q ;; observe ~P ;; Q: unknown`. We need to have different verbs like `assert`, `observe`, `conclude`, etc. Perhaps we could integrate the Answer Set solver here.
-- make an autoformatter that takes in raw files and converts to either math or english form
-- make an autoformatter that fixes REPL history
-- permit `neither x nor y` verbiage
-- `:test` command from REPL to run tests asynchronously and print basic results and way to follow them once they have resolved
-
-## Roadmap
-
-## lang0.1.1
-
-### repl
-
-- carat showing position of actual error rather than arbitrarily at beginning of line
-- type of results
-- painless navigation
-- helps for default functions
-
-## Features
-
-- `ac repl | acorn repl | aci`  (Read, Evaluate, Print Loop): this allows for quick exploration and experimentation in a realm
-- boolean logic
-
 # TODO
+
+- [ ] add boolean eval tests
+- [ ] implement `=`, `is` for boolean
+- [x] implement `raw -> AST`
+- [ ] implement`AST -> eng`
+- [ ] implement `AST -> math`
+- [ ] implement `AST -> c`
+- [ ] implement `AST -> raku/elixir/ruby`
+- [ ] implement `AST -> lisp`
+- [ ] implement `AST -> python`
+- [ ] implement add repl tests
 
 ## Definition of done
 For any of the boolean things:
@@ -46,11 +37,24 @@ For any of the boolean things:
 - if applicable, math to english
 - seamless repl integration (this means backspace and switching work appropriately)
 
-## lang/parser
-
+## lang/evaluator
 ### boolean
 
-#### Binary Operators
+# DONE
+
+## boolean
+
+### Primitives
+- True
+- False
+
+### Unary Operators
+- not `~`
+- nullify
+- truify
+- id
+
+### Binary Operators
 - and `/\`
 - nand `~/\`
 - or `\/`
@@ -65,20 +69,26 @@ For any of the boolean things:
 - not left `</`
 - not right `/>`
 
-# DONE
+# Ideas
 
-## lang/parser
+- propositional and predicate logic
+- `if P then Q -> P => Q`; `P => Q -> if P then Q`... make a facility to interchange one of these for another. Perhaps also if we have something like `assert P => Q ;; observe ~P ;; Q: unknown`. We need to have different verbs like `assert`, `observe`, `conclude`, etc. Perhaps we could integrate the Answer Set solver here.
+- make an autoformatter that takes in raw files and converts to either math or english form
+- make an autoformatter that fixes REPL history
+- permit `neither x nor y` verbiage
+- `:test` command from REPL to run tests asynchronously and print basic results and way to follow them once they have resolved
 
-### boolean
+# Roadmap
 
-#### Primitives
-- True
-- False
+## lang0.1.1
 
-#### Unary Operators
-- not `~`
-- nullify
-- truify
-- id
+### repl
 
-## lang/evaluator
+- carat showing position of actual error rather than arbitrarily at beginning of line
+- type of results
+- painless navigation
+- helps for default functions
+
+## Features
+
+- `ix | x | xrepl | x repl | xsh | xcli`  (Read, Evaluate, Print Loop): this allows for quick exploration and experimentation in a realm
