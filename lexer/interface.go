@@ -264,7 +264,7 @@ func BuildSimpleRules(tds []TokenDef) []participleLexer.SimpleRule {
 var tokenDefinitions = []TokenDef{
 	{
 		Name:  "Whitespace",
-		Regex: `\s+`,
+		Regex: `[ \t]+`,
 	},
 	{
 		Name:   "DoubleSemicolon",
